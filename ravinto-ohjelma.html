@@ -108,6 +108,51 @@ select option{background:var(--bg3);}
 .ms-bar-fill.protein{background:var(--blue);}
 .ms-bar-fill.carbs{background:var(--accent);}
 .ms-bar-fill.fat{background:var(--green);}
+/* Streak badge */
+.ms-streak{display:inline-flex;align-items:center;gap:4px;background:rgba(232,100,50,.15);color:#f07030;font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;margin-left:8px;}
+/* Water tracker */
+.ms-water{margin-top:10px;display:flex;align-items:center;gap:8px;}
+.ms-water-label{font-size:11px;font-weight:700;color:#4b9fe8;white-space:nowrap;}
+.ms-water-bar-wrap{flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;}
+.ms-water-bar-fill{height:100%;background:#4b9fe8;border-radius:3px;transition:width .4s;}
+.ms-water-val{font-size:11px;font-weight:700;color:var(--text2);white-space:nowrap;}
+.ms-water-btn{padding:4px 10px;border-radius:8px;background:rgba(75,159,232,.15);color:#4b9fe8;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:background .15s;flex-shrink:0;}
+.ms-water-btn:active{background:rgba(75,159,232,.3);}
+/* Weight step input */
+.wlf-step-wrap{display:flex;align-items:stretch;background:var(--bg3);border-radius:var(--r-sm);border:1.5px solid var(--border2);overflow:hidden;transition:border-color .2s;}
+.wlf-step-wrap:focus-within{border-color:var(--accent);}
+.wlf-step-wrap input{border:none;border-radius:0;text-align:center;flex:1;padding:11px 4px;font-weight:700;font-size:20px;background:transparent;width:0;min-width:0;color:var(--text);outline:none;}
+.wlf-step-btn{width:44px;font-size:22px;font-weight:700;color:var(--accent);background:var(--bg4);flex-shrink:0;cursor:pointer;transition:background .15s;line-height:1;border:none;font-family:'Inter',sans-serif;}
+.wlf-step-btn:active{background:var(--accent-dim);}
+/* Weight chart improved */
+.wc-axis-label{font-size:9px;fill:var(--text3);}
+/* Favorite button */
+.rm-fav-btn{width:100%;margin-top:8px;padding:12px;border-radius:var(--r);background:transparent;border:1.5px solid var(--border2);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.rm-fav-btn.active{border-color:#f5c518;color:#f5c518;background:rgba(245,197,24,.08);}
+.mo-fav-dot{width:8px;height:8px;border-radius:50%;background:#f5c518;flex-shrink:0;display:none;}
+.meal-option.fav .mo-fav-dot{display:block;}
+/* Quick-add button on meal option */
+.mo-quick-add{width:30px;height:30px;border-radius:8px;background:var(--bg4);color:var(--text3);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;border:none;font-family:'Inter',sans-serif;}
+.mo-quick-add:hover{background:var(--accent-dim);color:var(--accent);}
+/* Quick-add popup */
+.quick-add-overlay{position:fixed;inset:0;z-index:450;background:rgba(0,0,0,.5);}
+.quick-add-sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:var(--bg2);border-radius:20px 20px 0 0;padding:20px 20px 32px;z-index:451;}
+.qa-title{font-size:14px;font-weight:700;margin-bottom:14px;color:var(--text2);}
+.qa-meal-name{font-size:17px;font-weight:800;margin-bottom:16px;}
+.qa-slots{display:flex;flex-direction:column;gap:8px;}
+.qa-slot{padding:13px 16px;border-radius:var(--r-sm);background:var(--bg3);border:1.5px solid transparent;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;transition:all .2s;}
+.qa-slot:hover{border-color:var(--accent);}
+/* Donut chart */
+.dds-donut{flex-shrink:0;}
+/* Suosikit-tab otsikko */
+.dam-fav-empty{padding:24px;text-align:center;color:var(--text3);font-size:13px;}
+/* Goal timeline */
+.wt-timeline{background:var(--bg2);border-radius:var(--r);padding:16px;margin-bottom:16px;}
+.wt-timeline-title{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+.wt-timeline-info{font-size:15px;font-weight:700;margin-bottom:8px;}
+.wt-timeline-sub{font-size:12px;color:var(--text2);}
+.wt-timeline-bar{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;margin-top:10px;}
+.wt-timeline-fill{height:100%;border-radius:3px;background:var(--accent);transition:width .4s;}
 
 /* Tab bar */
 .tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:var(--bg2);border-top:1px solid var(--border);padding:8px 20px 12px;display:flex;gap:4px;z-index:200;}
@@ -652,6 +697,8 @@ input[type=number]{-moz-appearance:textfield;}
 // ═══════════════════════════════════════════
 function showToast(msg, type='error') {
   const t = document.getElementById('toast');
+  t.className = 'toast';
+  void t.offsetHeight; // pakota reflow jotta CSS transition laukeaa uudelleen
   t.textContent = msg;
   t.className = 'toast show ' + type;
   setTimeout(() => t.className = 'toast', 3000);
@@ -983,12 +1030,14 @@ const AINESOSA_DB = [
 // ═══════════════════════════════════════════
 let state = {
   screen:'onboarding',obStep:1,
-  obData:{gender:null,goal:null,macroMode:'auto',mealCount:4,restrictions:[],
+  obData:{gender:'male',goal:null,macroMode:'auto',mealCount:4,restrictions:[],
           age:25,weight:80,height:180,
           selectedMeals:['aamiainen','lounas','valipala','paivallinen'],
           trainingMode:'snack'},
   activeTab:'program',profile:null,mealPlan:[],selectedOptions:[],weightLog:[],trainingDay:false,
   diary:{},        // { "2026-03-18": { eaten: {"0": true}, freeEntries: [{name,emoji,kcal,protein,carbs,fat}] } }
+  waterLog:{},     // { "2026-03-18": 1500 }  (ml per day)
+  favorites:[],    // [{name,emoji,kcal,protein,carbs,fat,ingredients,instructions,time,mealPrep}]
   currentDate:null, // ISO date string for diary view
   viewDate:null,   // ISO date string for program view
 };
@@ -1388,16 +1437,111 @@ function renderMacroStrip(){
   const hour=new Date().getHours();
   const greeting=hour<12?'Hyvää huomenta ☀️':hour<17?'Hyvää päivää 🌤️':'Hyvää iltaa 🌙';
 
+  const streak=calcStreak();
+  const streakHtml=streak>=2?`<span class="ms-streak">🔥 ${streak}</span>`:'';
+
+  const today2=todayISO();
+  const waterGoal=Math.round((p.weight||70)*35/250)*250;
+  const waterMl=state.waterLog[today2]||0;
+  const waterPct=Math.min(100,Math.round(waterMl/waterGoal*100));
+  const waterLbl=waterMl>=1000?`${(waterMl/1000).toFixed(1)}l`:`${waterMl}ml`;
+  const waterGoalLbl=waterGoal>=1000?`${(waterGoal/1000).toFixed(1)}l`:`${waterGoal}ml`;
+
   document.getElementById('macro-strip').innerHTML=`
     <div class="ms-top">
-      <div class="ms-greeting">${greeting}, ${sanitize(p.name.split(' ')[0])}${state.trainingDay?' 💪':''}</div>
+      <div class="ms-greeting">${greeting}, ${sanitize(p.name.split(' ')[0])}${state.trainingDay?' 💪':''}${streakHtml}</div>
       <div class="ms-kcal">${eaten.kcal} <span>/ ${tKcal} kcal</span></div>
     </div>
     <div class="ms-macros">
       <div class="ms-macro"><div class="ms-macro-label">Proteiini</div><div class="ms-macro-val">${eaten.protein}<em>/${tProt}g</em></div><div class="ms-bar"><div class="ms-bar-fill protein" style="width:${pProt}%"></div></div></div>
       <div class="ms-macro"><div class="ms-macro-label">HH</div><div class="ms-macro-val">${eaten.carbs}<em>/${tCarbs}g</em></div><div class="ms-bar"><div class="ms-bar-fill carbs" style="width:${pCarbs}%"></div></div></div>
       <div class="ms-macro"><div class="ms-macro-label">Rasva</div><div class="ms-macro-val">${eaten.fat}<em>/${tFat}g</em></div><div class="ms-bar"><div class="ms-bar-fill fat" style="width:${pFat}%"></div></div></div>
+    </div>
+    <div class="ms-water">
+      <span class="ms-water-label">💧 Vesi</span>
+      <div class="ms-water-bar-wrap"><div class="ms-water-bar-fill" style="width:${waterPct}%"></div></div>
+      <span class="ms-water-val">${waterLbl}/${waterGoalLbl}</span>
+      <button class="ms-water-btn" onclick="addWater(250)">+250ml</button>
     </div>`;
+}
+
+// ═══════════════════════════════════════════
+// SUOSIKIT
+// ═══════════════════════════════════════════
+function isFavorite(name){ return state.favorites.some(f=>f.name===name); }
+
+async function toggleFavorite(name,opt){
+  if(isFavorite(name)){
+    state.favorites=state.favorites.filter(f=>f.name!==name);
+  } else {
+    state.favorites.push({name:opt.name,emoji:opt.emoji||'🍽️',kcal:Math.round(opt.kcal||0),protein:Math.round(opt.protein||0),carbs:Math.round(opt.carbs||0),fat:Math.round(opt.fat||0),ingredients:opt.ingredients||[],instructions:opt.instructions||'',time:opt.time||'',mealPrep:!!opt.mealPrep});
+  }
+  await save('favorites',state.favorites);
+  // Päivitä nappi heti jos modaali auki
+  const btn=document.getElementById('fav-toggle-btn');
+  if(btn){btn.textContent=isFavorite(name)?'⭐ Suosikki':'☆ Lisää suosikkeihin';btn.className='rm-fav-btn'+(isFavorite(name)?' active':'');}
+  renderMealPlan();
+}
+
+// ═══════════════════════════════════════════
+// QUICK-ADD (pikatoiminto meal-optiosta päiväkirjaan)
+// ═══════════════════════════════════════════
+function openQuickAdd(mi,oi,e){
+  e.stopPropagation();
+  const meal=state.mealPlan[mi]; if(!meal) return;
+  const opt=meal.options[oi]; if(!opt) return;
+  const overlay=document.createElement('div');
+  overlay.className='quick-add-overlay';
+  overlay.onclick=()=>document.body.removeChild(overlay);
+  const sheet=document.createElement('div');
+  sheet.className='quick-add-sheet';
+  sheet.onclick=e2=>e2.stopPropagation();
+  sheet.innerHTML=`
+    <div class="qa-title">Lisää päiväkirjaan</div>
+    <div class="qa-meal-name">${sanitize(opt.emoji||'🍽️')} ${sanitize(opt.name)}</div>
+    <div class="qa-slots">${DIARY_SLOTS.map(s=>`
+      <div class="qa-slot" onclick="quickAddToDiary(${mi},${oi},'${s.key}')">
+        <span>${s.icon}</span><span>${s.label}</span>
+      </div>`).join('')}
+    </div>`;
+  overlay.appendChild(sheet);
+  document.body.appendChild(overlay);
+}
+
+async function quickAddToDiary(mi,oi,slotKey){
+  const meal=state.mealPlan[mi]; if(!meal) return;
+  const opt=meal.options[oi]; if(!opt) return;
+  const dateStr=state.currentDate||todayISO();
+  const day=ensureDiaryDay(dateStr);
+  day.slots[slotKey].push({name:opt.name,emoji:opt.emoji||'🍽️',kcal:Math.round(opt.kcal||0),protein:Math.round(opt.protein||0),carbs:Math.round(opt.carbs||0),fat:Math.round(opt.fat||0)});
+  await save('diary',state.diary);
+  // Poista overlay
+  document.querySelectorAll('.quick-add-overlay').forEach(el=>el.parentNode.removeChild(el));
+  if(dateStr===todayISO()) renderMacroStrip();
+  if(state.activeTab==='diary') renderDiaryTab();
+  showToast(`${opt.name} lisätty!`,'success');
+}
+
+// ── Streak (peräkkäiset kirjauspäivät) ──
+function calcStreak(){
+  let streak=0;
+  const today=todayISO();
+  for(let i=0;;i++){
+    const d=shiftDate(today,-i);
+    const hasDiary=state.diary[d]&&(Object.keys(state.diary[d].eaten||{}).length>0||(state.diary[d].freeEntries||[]).length>0);
+    const hasWeight=state.weightLog.some(e=>e.date===d);
+    if(hasDiary||hasWeight) streak++;
+    else break;
+  }
+  return streak;
+}
+
+// ── Vesilaskuri ──
+async function addWater(ml){
+  const today=todayISO();
+  state.waterLog[today]=(state.waterLog[today]||0)+ml;
+  await save('waterLog',state.waterLog);
+  renderMacroStrip();
 }
 
 // ── Meal Plan ──
@@ -1416,6 +1560,8 @@ function renderMealPlan(){
     // Piilota treenivälipala lepopäivänä tai boost-moodissa
     if(meal.isTrainingSnack && (!state.trainingDay || trainingMode==='boost')) return '';
     const isPW=meal.isTrainingSnack && state.trainingDay;
+    // Järjestä suosikit ensin (pysytään originaalissa indeksissä state.selectedOptions varten)
+    const sortedOpts=meal.options.map((o,oi)=>({o,oi})).sort((a,b)=>(isFavorite(b.o.name)?1:0)-(isFavorite(a.o.name)?1:0));
     return `
       <div class="meal-card ${isPW?'preworkout':''} slide-up" style="animation-delay:${mi*60}ms">
         <div class="mc-header">
@@ -1423,7 +1569,7 @@ function renderMealPlan(){
           ${isPW?'<div class="mc-pw-badge">⚡ PRE-WORKOUT</div>':''}
         </div>
         <div class="mc-options">
-          ${meal.options.map((opt,oi)=>renderMealOption(opt,mi,oi)).join('')}
+          ${sortedOpts.map(({o,oi})=>renderMealOption(o,mi,oi)).join('')}
           <div class="mc-btns">
             <button class="mc-ai-btn" id="ai-btn-${mi}" onclick="showAiPreference(${mi})">${isOffline?'✨ AI idea (Offline)':'✨ AI idea'}</button>
             <button class="mc-custom-btn" onclick="openCustomMealModal(${mi})">＋ Oma ateria</button>
@@ -1461,11 +1607,12 @@ function renderMealOption(opt,mi,oi){
   const selected=state.selectedOptions[mi]===oi;
   const isNew=opt._new;
   const isCustom=opt._custom;
+  const fav=isFavorite(opt.name);
   const kcal=Math.round(opt.kcal||0);
   const prot=Math.round(opt.protein||0);
   const carbs=Math.round(opt.carbs||0);
   const fat=Math.round(opt.fat||0);
-  const badge=isNew?'<span class="new-badge">AI</span>':isCustom?'<span class="custom-badge">OMA</span>':'';
+  const badge=isNew?'<span class="new-badge">AI</span>':isCustom?'<span class="custom-badge">OMA</span>':fav?'<span class="new-badge" style="background:#f5c518;color:#111;">⭐</span>':'';
   return `
     <div class="meal-option ${selected?'selected':''} ${(isNew||isCustom)?'pop-in':''}" onclick="openRecipe(${mi},${oi})">
       <div class="mo-emoji">${sanitize(opt.emoji||'🍽️')}</div>
@@ -1479,7 +1626,7 @@ function renderMealOption(opt,mi,oi){
         </div>
         <div class="mo-time">⏱ ${sanitize(opt.time||'?')}${opt.mealPrep?' · 📦 Meal prep':''}</div>
       </div>
-      <div class="mo-arrow">›</div>
+      <button class="mo-quick-add" onclick="openQuickAdd(${mi},${oi},event)" title="Lisää päiväkirjaan">📓</button>
     </div>`;
 }
 
@@ -1490,7 +1637,7 @@ function openRecipe(mi,oi){
   const modal=document.getElementById('recipe-modal');
   const content=document.getElementById('recipe-modal-content');
   const selected=state.selectedOptions[mi]===oi;
-  const canDelete=opt._new||opt._custom;
+  const canDelete=meal.options.length>1;
 
   const imgHtml=`<div class="recipe-img-placeholder">${sanitize(opt.emoji||'🍽️')}</div>`;
   const ingredientsHtml=(opt.ingredients||[]).map(ing=>
@@ -1520,6 +1667,7 @@ function openRecipe(mi,oi){
       <div class="rm-section-title">Valmistusohje</div>
       <div class="rm-instructions" style="white-space:pre-line;">${sanitizeNL(opt.instructions||'Ei ohjetta.')}</div>
       <button class="rm-select-btn" onclick="selectMealOption(${mi},${oi})">${selected?'✓ Valittu':'Valitse tämä ateria'}</button>
+      <button id="fav-toggle-btn" class="rm-fav-btn${isFavorite(opt.name)?' active':''}" onclick="toggleFavorite('${sanitize(opt.name).replace(/'/g,"\\'")}',state.mealPlan[${mi}].options[${oi}])">${isFavorite(opt.name)?'⭐ Suosikki':'☆ Lisää suosikkeihin'}</button>
       ${canDelete?`<button class="rm-delete-btn" onclick="removeMealOption(${mi},${oi})">🗑 Poista vaihtoehto</button>`:''}
     </div>`;
 
@@ -2028,7 +2176,7 @@ function closeCustomModal(e){
 // ═══════════════════════════════════════════
 function renderWeightTab(){
   const log=state.weightLog;
-  const last14=log.slice(-14);
+  const last14=log.slice(-30);
 
   let statsHtml='';
   if(log.length>=2){
@@ -2048,8 +2196,8 @@ function renderWeightTab(){
   }
 
   const chartHtml=last14.length>=2?`
-    <div class="weight-chart-wrap"><div class="wc-title">14 päivän kehitys</div>
-      <svg class="weight-chart" viewBox="0 0 340 100" preserveAspectRatio="none">${renderWeightChart(last14)}</svg>
+    <div class="weight-chart-wrap"><div class="wc-title">${last14.length} päivän kehitys</div>
+      <svg class="weight-chart" viewBox="0 0 340 120" preserveAspectRatio="none">${renderWeightChart(last14)}</svg>
     </div>`:'';
 
   const entriesHtml=log.length?`
@@ -2066,26 +2214,86 @@ function renderWeightTab(){
   const aiComment=log.length>=3?`
     <div class="ai-comment"><div class="ai-comment-label">✨ AI Analyysi</div><div class="ai-comment-text">${generateWeightComment()}</div></div>`:'';
 
+  // Tavoiteaikajana
+  let timelineHtml='';
+  const targetW=state.profile?.targetWeight;
+  if(targetW&&log.length>=3){
+    const latest=log[log.length-1].weight;
+    const diff=targetW-latest;
+    const n=log.length;
+    // Lineaarinen trendi (kg/viikko): käytä ensimmäistä ja viimeistä, skaalaa päivistä viikoiksi
+    const daySpan=Math.max(1,(new Date(log[n-1].date)-new Date(log[0].date))/(1000*60*60*24));
+    const totalChange=log[n-1].weight-log[0].weight;
+    const ratePerWeek=totalChange/daySpan*7;
+    const absRate=Math.abs(ratePerWeek);
+    const isOnTrack=(diff<0&&ratePerWeek<-0.05)||(diff>0&&ratePerWeek>0.05);
+    if(Math.abs(diff)<0.2){
+      timelineHtml=`<div class="wt-timeline"><div class="wt-timeline-title">Tavoiteaikajana</div><div class="wt-timeline-info" style="color:var(--green)">🎯 Olet tavoitepainossa!</div><div class="wt-timeline-sub">Tavoitepaino: ${targetW} kg</div></div>`;
+    } else if(absRate<0.05){
+      timelineHtml=`<div class="wt-timeline"><div class="wt-timeline-title">Tavoiteaikajana</div><div class="wt-timeline-info">Tavoite: ${targetW} kg (${diff>0?'+':''}${diff.toFixed(1)} kg jäljellä)</div><div class="wt-timeline-sub">Paino ei ole muuttunut viime aikoina — tarkista kalorit.</div></div>`;
+    } else {
+      const weeksToGoal=Math.abs(diff)/absRate;
+      const eta=new Date();eta.setDate(eta.getDate()+Math.round(weeksToGoal*7));
+      const etaStr=eta.toLocaleDateString('fi-FI',{day:'numeric',month:'long'});
+      const pct=Math.min(100,Math.max(0,Math.round((1-(Math.abs(diff)/Math.abs(targetW-(log[0].weight))))*100)));
+      timelineHtml=`<div class="wt-timeline">
+        <div class="wt-timeline-title">Tavoiteaikajana</div>
+        <div class="wt-timeline-info">${isOnTrack?'🎯':'📊'} Tavoite ${targetW} kg — arviolta ${Math.round(weeksToGoal)} vkoa</div>
+        <div class="wt-timeline-sub">Tahti ${ratePerWeek>0?'+':''}${ratePerWeek.toFixed(2)} kg/vko · ETA ${etaStr}</div>
+        <div class="wt-timeline-bar"><div class="wt-timeline-fill" style="width:${pct}%"></div></div>
+      </div>`;
+    }
+  }
+
+  const lastWeight=log.length?log[log.length-1].weight:(state.profile?.weight||75);
+
   document.getElementById('weight-content').innerHTML=`
     <div class="weight-log-form">
-      <div class="wlf-field"><label class="wlf-label">Paino (kg)</label><input class="wlf-input" id="weight-input" type="number" step="0.1" placeholder="75.0"></div>
+      <div class="wlf-field">
+        <label class="wlf-label">Paino (kg)</label>
+        <div class="wlf-step-wrap">
+          <button class="wlf-step-btn" type="button" onclick="stepInput('weight-input',-1,event)">−</button>
+          <input id="weight-input" type="number" step="0.1" min="20" max="300" value="${lastWeight}" placeholder="75.0">
+          <button class="wlf-step-btn" type="button" onclick="stepInput('weight-input',1,event)">＋</button>
+        </div>
+      </div>
       <button class="wlf-btn" onclick="logWeight()">Kirjaa</button>
     </div>
-    ${chartHtml}${statsHtml}${entriesHtml}${aiComment}
+    ${timelineHtml}${chartHtml}${statsHtml}${entriesHtml}${aiComment}
     ${log.length===0?'<div class="empty-state"><div class="es-icon">⚖️</div><p>Kirjaa ensimmäinen painosi yllä.<br>Seuraat kehitystäsi 14 päivän kaaviossa.</p></div>':''}`;
 }
 
 function renderWeightChart(log){
   if(log.length<2)return '';
   const weights=log.map(e=>e.weight);
-  const min=Math.min(...weights)-0.5;const max=Math.max(...weights)+0.5;
-  const range=max-min||1;const n=log.length;
-  const pts=log.map((e,i)=>{const x=(i/(n-1))*300+20;const y=90-((e.weight-min)/range)*80;return `${x},${y}`;});
+  const minW=Math.min(...weights);const maxW=Math.max(...weights);
+  const pad=Math.max(0.5,(maxW-minW)*0.15)||0.5;
+  const minY=minW-pad;const maxY=maxW+pad;
+  const range=maxY-minY||1;const n=log.length;
+  // chart area: x 30..330, y 8..90 (labels at bottom 90..112)
+  const cx=i=>(i/(n-1))*300+30;
+  const cy=w=>88-((w-minY)/range)*80;
+  const pts=log.map((e,i)=>`${cx(i)},${cy(e.weight)}`);
   const pathD=`M ${pts.join(' L ')}`;
-  const areaD=`M ${pts[0]} L ${pts.join(' L ')} L ${300+20},90 L 20,90 Z`;
+  const areaD=`M ${pts[0]} L ${pts.join(' L ')} L ${cx(n-1)},88 L ${cx(0)},88 Z`;
+  // Y-axis labels (min, max)
+  const yLabels=`
+    <text class="wc-axis-label" x="28" y="${cy(maxW)+4}" text-anchor="end">${maxW.toFixed(1)}</text>
+    <text class="wc-axis-label" x="28" y="${cy(minW)+4}" text-anchor="end">${minW.toFixed(1)}</text>`;
+  // X-axis labels: first and last date
+  const fmt=d=>{const dt=new Date(d+'T12:00:00');return dt.toLocaleDateString('fi-FI',{day:'numeric',month:'numeric'});};
+  const xLabels=`
+    <text class="wc-axis-label" x="${cx(0)}" y="104" text-anchor="middle">${fmt(log[0].date)}</text>
+    <text class="wc-axis-label" x="${cx(n-1)}" y="104" text-anchor="middle">${fmt(log[n-1].date)}</text>`;
+  // Middle date if enough points
+  const midLabel=n>4?`<text class="wc-axis-label" x="${cx(Math.floor(n/2))}" y="104" text-anchor="middle">${fmt(log[Math.floor(n/2)].date)}</text>`:'';
   return `<defs><linearGradient id="wgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8b84b" stop-opacity="0.3"/><stop offset="100%" stop-color="#e8b84b" stop-opacity="0"/></linearGradient></defs>
-    <path d="${areaD}" fill="url(#wgrad)"/><path d="${pathD}" fill="none" stroke="#e8b84b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    ${log.map((e,i)=>{const x=(i/(n-1))*300+20;const y=90-((e.weight-min)/range)*80;return `<circle cx="${x}" cy="${y}" r="3" fill="#e8b84b"/>`;}).join('')}`;
+    <line x1="30" y1="8" x2="30" y2="88" stroke="#2e2e2e" stroke-width="1"/>
+    <line x1="30" y1="88" x2="330" y2="88" stroke="#2e2e2e" stroke-width="1"/>
+    <path d="${areaD}" fill="url(#wgrad)"/>
+    <path d="${pathD}" fill="none" stroke="#e8b84b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${log.map((e,i)=>`<circle cx="${cx(i)}" cy="${cy(e.weight)}" r="3" fill="#e8b84b"/>`).join('')}
+    ${yLabels}${xLabels}${midLabel}`;
 }
 
 function generateWeightComment(){
@@ -2114,7 +2322,14 @@ async function logWeight(){
   else state.weightLog.push({date:today,weight:val});
   state.weightLog.sort((a,b)=>a.date.localeCompare(b.date));
   await save('weightLog',state.weightLog);
-  input.value='';renderWeightTab();
+  // Päivitä paino myös profiiliin
+  if(state.profile){
+    state.profile.weight=val;
+    await save('profile',state.profile);
+    renderSettingsTab();
+  }
+  renderWeightTab();
+  showToast(`${val} kg kirjattu!`,'success');
 }
 
 function formatDate(dateStr){
@@ -2135,6 +2350,7 @@ function renderSettingsTab(){
         <div class="ss-row"><div class="ss-row-label">Nimi</div><input class="ss-input" id="sp-name" type="text" value="${sanitize(p.name)}" style="width:150px;text-align:right;"></div>
         <div class="ss-row"><div class="ss-row-label">Ikä</div><input class="ss-input" id="sp-age" type="number" value="${p.age}"><span style="color:var(--text2);font-size:13px;margin-left:4px;">v</span></div>
         <div class="ss-row"><div class="ss-row-label">Paino</div><input class="ss-input" id="sp-weight" type="number" step="0.1" value="${p.weight}"><span style="color:var(--text2);font-size:13px;margin-left:4px;">kg</span></div>
+        <div class="ss-row"><div class="ss-row-label">Tavoitepaino</div><input class="ss-input" id="sp-target" type="number" step="0.1" value="${p.targetWeight||''}" placeholder="–"><span style="color:var(--text2);font-size:13px;margin-left:4px;">kg</span></div>
         <div class="ss-row"><div class="ss-row-label">Pituus</div><input class="ss-input" id="sp-height" type="number" value="${p.height}"><span style="color:var(--text2);font-size:13px;margin-left:4px;">cm</span></div>
         <div class="ss-row"><div class="ss-row-label">Tavoite</div>
           <select class="ss-input" id="sp-goal" style="width:150px;padding:6px 8px;">
@@ -2191,7 +2407,8 @@ async function saveProfileSettings(){
   if(!age||age<10||age>100){showToast('Tarkista ikä','error');return;}
   if(!weight||weight<30||weight>250){showToast('Tarkista paino','error');return;}
   if(!height||height<100||height>250){showToast('Tarkista pituus','error');return;}
-  state.profile={...state.profile,name,age,weight,height,goal};
+  const targetWeight=parseFloat(document.getElementById('sp-target')?.value)||null;
+  state.profile={...state.profile,name,age,weight,height,goal,targetWeight};
   state.profile.macros=calcMacros(state.profile);
   await save('profile',state.profile);
   renderMacroStrip();
@@ -2204,7 +2421,7 @@ function confirmReset(){
 }
 
 async function resetApp(){
-  const keys=['profile','mealPlan','selectedOptions','weightLog','diary','viewDate'];
+  const keys=['profile','mealPlan','selectedOptions','weightLog','diary','viewDate','waterLog','favorites'];
   try{
     if(_hasClaudeStorage){for(const k of keys) await window.storage.delete(k);}
     else{for(const k of keys) localStorage.removeItem('ravinto_'+k);}
@@ -2281,10 +2498,11 @@ function setDiaryDate(dateStr){state.currentDate=dateStr;renderDiaryTab();}
 // ── Diary Add Modal ──
 let diaryAddTarget=null;
 let diaryAddTab='plan';
+let diarySearchTimeout=null;
 
 function openDiaryAddModal(slotKey){
   diaryAddTarget=slotKey;
-  diaryAddTab='plan';
+  diaryAddTab=state.favorites.length?'favorites':'plan';
   renderDiaryAddModal();
   document.getElementById('diary-add-modal').style.display='flex';
 }
@@ -2344,12 +2562,28 @@ function renderDiaryAddModal(){
     <button class="dam-save-btn" onclick="saveDiaryManual()">Lisää ateria</button>`;
   }
 
+  // Suosikit-tab
+  let favsHtml='';
+  if(diaryAddTab==='favorites'){
+    if(!state.favorites.length){
+      favsHtml='<div class="dam-fav-empty">Ei suosikkeja vielä.<br>Avaa reseptikortti ja paina ☆ Lisää suosikkeihin.</div>';
+    } else {
+      favsHtml=state.favorites.map((fav,fi)=>`
+        <div class="dam-plan-item" onclick="addDiaryFromFavorite(${fi})">
+          <div class="dam-plan-item-name">${sanitize(fav.emoji)} ${sanitize(fav.name)}</div>
+          <div class="dam-plan-item-macros">${fav.kcal} kcal · P ${fav.protein}g · HH ${fav.carbs}g · R ${fav.fat}g</div>
+        </div>`).join('');
+    }
+    bodyHtml=favsHtml;
+  }
+
   document.getElementById('diary-add-modal-content').innerHTML=`
     <div class="dam-header">
       <div class="dam-title">Lisää — ${sanitize(slotLabel)}</div>
       <button class="dam-close" onclick="closeDiaryAddModal()">✕</button>
     </div>
     <div class="dam-tabs">
+      <button class="dam-tab ${diaryAddTab==='favorites'?'active':''}" onclick="setDiaryAddTab('favorites')">⭐ Suosikit${state.favorites.length?` (${state.favorites.length})`:''}</button>
       <button class="dam-tab ${diaryAddTab==='plan'?'active':''}" onclick="setDiaryAddTab('plan')">Ohjelma</button>
       <button class="dam-tab ${diaryAddTab==='search'?'active':''}" onclick="setDiaryAddTab('search')">Hae tuote</button>
       <button class="dam-tab ${diaryAddTab==='manual'?'active':''}" onclick="setDiaryAddTab('manual')">Manuaalinen</button>
@@ -2361,18 +2595,108 @@ function renderDiaryAddModal(){
 
 function diarySearch(query){
   const results=document.getElementById('diary-search-results');
+  clearTimeout(diarySearchTimeout);
   if(!query||query.length<2){
     results.innerHTML='<div style="padding:12px 0;text-align:center;color:var(--text3);font-size:13px;">Kirjoita vähintään 2 merkkiä...</div>';
     return;
   }
   const q=query.toLowerCase();
-  const local=AINESOSA_DB.map((a,i)=>({...a,idx:i})).filter(a=>a.name.toLowerCase().includes(q)).slice(0,8);
-  if(!local.length){results.innerHTML='<div style="padding:12px 0;text-align:center;color:var(--text3);font-size:13px;">Ei tuloksia</div>';return;}
-  results.innerHTML=local.map(a=>`
+  // 1. Näytä paikallinen tietokanta heti
+  const local=AINESOSA_DB.map((a,i)=>({...a,idx:i})).filter(a=>a.name.toLowerCase().includes(q)).slice(0,5);
+  // 2. Hae myös FI-tuotevälimuistista
+  const fiLocal=searchLocalFiProducts(q)||[];
+  renderDiarySearchResults(local,fiLocal.slice(0,5),query);
+  // 3. API-haku jos välimuistissa ei tarpeeksi tuloksia
+  if(fiLocal.length<2&&query.length>=3){
+    diarySearchTimeout=setTimeout(()=>fetchDiaryOpenFoodFacts(query),300);
+  }
+}
+
+function renderDiarySearchResults(localDb,apiProducts,query){
+  const results=document.getElementById('diary-search-results');
+  if(!results) return;
+  const dbRows=localDb.map(a=>`
     <div class="dam-search-result" onclick="addDiaryFromDB(${a.idx})">
       <div><div class="dam-sr-name">${sanitize(a.name)}</div><div class="dam-sr-cat">${sanitize(a.cat)} · per 100g</div></div>
       <div class="dam-sr-macros">${a.kcal} kcal<br>${a.protein}g P</div>
     </div>`).join('');
+  window._diaryApiProducts=apiProducts;
+  const apiRows=apiProducts.map((p,i)=>`
+    <div class="dam-search-result" onclick="addDiaryFromApiProduct(${i})">
+      <div><div class="dam-sr-name">${sanitize(p.name)}</div><div class="dam-sr-cat">${sanitize(p.brand||'Kaupan tuote')} · per 100g</div></div>
+      <div class="dam-sr-macros">${p.kcal} kcal<br>${p.protein}g P</div>
+    </div>`).join('');
+  const apiHeader=apiProducts.length?`<div style="padding:6px 0 4px;font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.5px;text-transform:uppercase;">Kaupan tuotteet</div>`:'';
+  if(!dbRows&&!apiRows){
+    results.innerHTML='<div style="padding:12px 0;text-align:center;color:var(--text3);font-size:13px;">Haetaan...</div>';
+    return;
+  }
+  results.innerHTML=dbRows+apiHeader+apiRows;
+}
+
+async function fetchDiaryOpenFoodFacts(query){
+  const results=document.getElementById('diary-search-results');
+  if(!results) return;
+  try{
+    const url=`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=8&lc=fi&cc=fi&fields=product_name,brands,nutriments`;
+    const resp=await fetch(url);
+    const data=await resp.json();
+    const products=(data.products||[]).filter(p=>{
+      const n=p.nutriments;
+      return p.product_name&&n&&n['energy-kcal_100g']!==undefined;
+    }).map(normalizeOFFProduct);
+    const q=query.toLowerCase();
+    const local=AINESOSA_DB.map((a,i)=>({...a,idx:i})).filter(a=>a.name.toLowerCase().includes(q)).slice(0,5);
+    renderDiarySearchResults(local,products.slice(0,6),query);
+  }catch(e){/* offline tai API-virhe, paikalliset tulokset jo näkyvissä */}
+}
+
+async function addDiaryFromApiProduct(idx){
+  const p=(window._diaryApiProducts||[])[idx]; if(!p) return;
+  const dateStr=state.currentDate||todayISO();
+  const day=ensureDiaryDay(dateStr);
+  day.slots[diaryAddTarget].push({name:p.name+(p.brand?` (${p.brand})`:'')+' 100g',emoji:'🛒',kcal:p.kcal,protein:p.protein,carbs:p.carbs,fat:p.fat});
+  await save('diary',state.diary);
+  closeDiaryAddModal();
+  renderDiaryTab();
+  if(dateStr===todayISO()) renderMacroStrip();
+  showToast('Lisätty!','success');
+}
+
+async function copyPrevDay(){
+  const dateStr=state.currentDate||todayISO();
+  const prevDate=shiftDate(dateStr,-1);
+  const prev=state.diary[prevDate]; if(!prev) return;
+  const cur=state.diary[dateStr];
+  const curHasData=cur&&DIARY_SLOTS.some(s=>(cur.slots?.[s.key]||[]).length>0);
+  const doCopy=async()=>{
+    const day=ensureDiaryDay(dateStr);
+    DIARY_SLOTS.forEach(s=>{
+      const src=(prev.slots?.[s.key]||[]);
+      day.slots[s.key]=[...day.slots[s.key],...src.map(it=>({...it}))];
+    });
+    await save('diary',state.diary);
+    renderDiaryTab();
+    if(dateStr===todayISO()) renderMacroStrip();
+    showToast('Edellinen päivä kopioitu!','success');
+  };
+  if(curHasData){
+    showConfirm('Päivässä on jo merkintöjä. Lisätäänkö eilisen ateriat niiden perään?',doCopy);
+  } else {
+    doCopy();
+  }
+}
+
+async function addDiaryFromFavorite(fi){
+  const fav=state.favorites[fi]; if(!fav) return;
+  const dateStr=state.currentDate||todayISO();
+  const day=ensureDiaryDay(dateStr);
+  day.slots[diaryAddTarget].push({name:fav.name,emoji:fav.emoji,kcal:fav.kcal,protein:fav.protein,carbs:fav.carbs,fat:fav.fat});
+  await save('diary',state.diary);
+  closeDiaryAddModal();
+  renderDiaryTab();
+  if(dateStr===todayISO()) renderMacroStrip();
+  showToast('Lisätty!','success');
 }
 
 async function addDiaryFromPlan(mealIdx){
@@ -2551,7 +2875,24 @@ function renderDiaryTab(){
   const pCarbs=Math.min(100,tCarbs?Math.round(eaten.carbs/tCarbs*100):0);
   const pFat=Math.min(100,tFat?Math.round(eaten.fat/tFat*100):0);
   const kcalColor=eaten.kcal>tKcal*1.1?'var(--red)':eaten.kcal>=tKcal*0.75?'var(--green)':'var(--text)';
+  // Donitsikaavio P/HH/R
+  const pCal=eaten.protein*4, cCal=eaten.carbs*4, fCal=eaten.fat*9;
+  const totalMacroCal=pCal+cCal+fCal||1;
+  const donutSvg=(()=>{
+    const r=28,cx=32,cy=32,circum=2*Math.PI*r;
+    let offset=0;
+    const slice=(val,color)=>{const dash=(val/totalMacroCal)*circum;const s=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="8" stroke-dasharray="${dash} ${circum}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})"/>`;offset+=dash;return s;};
+    const pSlice=slice(pCal,'#4b8be8');
+    const cSlice=slice(cCal,'#e8b84b');
+    const fSlice=slice(fCal,'#4caf7a');
+    return `<svg class="dds-donut" width="64" height="64" viewBox="0 0 64 64">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#2a2a2a" stroke-width="8"/>
+      ${eaten.kcal>0?pSlice+cSlice+fSlice:''}
+      <text x="${cx}" y="${cy+1}" text-anchor="middle" dominant-baseline="middle" font-size="9" font-weight="700" fill="#f0f0f0">${eaten.kcal>0?Math.round(pCal/totalMacroCal*100)+'%':''}</text>
+    </svg>`;
+  })();
   const daySummaryHtml=`<div class="diary-day-summary">
+    ${donutSvg}
     <div>
       <div class="dds-kcal" style="color:${kcalColor}">${eaten.kcal}<small>/ ${tKcal} kcal</small></div>
     </div>
@@ -2603,13 +2944,17 @@ function renderDiaryTab(){
     </div>
   </div>`:'';
 
+  const prevDate=shiftDate(dateStr,-1);
+  const prevHasData=state.diary[prevDate]&&DIARY_SLOTS.some(s=>(state.diary[prevDate].slots?.[s.key]||[]).length>0);
+  const copyBtnHtml=prevHasData?`<button class="diary-cal-btn" onclick="copyPrevDay()" style="margin-right:6px;">📋 Kopioi edellinen</button>`:'';
+
   container.innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <div>
         <div style="font-size:22px;font-weight:800;">Päiväkirja</div>
         <div style="font-size:12px;color:var(--text2);margin-top:2px;">${sanitize(dateLabel)}</div>
       </div>
-      <button class="diary-cal-btn" onclick="openCalModal()">📅 Kalenteri</button>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">${copyBtnHtml}<button class="diary-cal-btn" onclick="openCalModal()">📅 Kalenteri</button></div>
     </div>
     ${weekStripHtml}
     ${daySummaryHtml}
@@ -2964,6 +3309,8 @@ async function init(){
     state.weightLog=await load('weightLog')||[];
     state.trainingDay=(await load('trainingDay'))===true;
     state.diary=await load('diary')||{};
+    state.waterLog=await load('waterLog')||{};
+    state.favorites=await load('favorites')||[];
     state.viewDate=await load('viewDate')||todayISO();
     state.currentDate=todayISO();
     // Päivitä toggle-UI ladatun tilan mukaan
