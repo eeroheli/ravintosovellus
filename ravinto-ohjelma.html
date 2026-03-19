@@ -521,17 +521,33 @@ input[type=number]{-moz-appearance:textfield;}
 .report-close{width:100%;padding:14px;border-radius:var(--r);background:var(--bg3);color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;margin-top:16px;border:none;font-family:'Inter',sans-serif;}
 
 /* ── SHOPPING LIST MODAL ── */
-.shopping-modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 20px calc(32px + env(safe-area-inset-bottom));}
-.shopping-title{font-size:20px;font-weight:800;margin-bottom:16px;}
-.shopping-cat{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.5px;text-transform:uppercase;margin:14px 0 8px;padding-top:8px;border-top:1px solid var(--border);}
-.shopping-cat:first-child{border-top:none;margin-top:0;}
-.shopping-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.shopping-modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 20px calc(32px + env(safe-area-inset-bottom));}
+.shopping-title{font-size:20px;font-weight:800;}
+.sl-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.sl-toolbar-actions{display:flex;gap:8px;align-items:center;}
+.sl-copy-btn{width:36px;height:36px;border-radius:10px;background:var(--bg3);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:background .15s;}
+.sl-copy-btn:active{background:var(--accent-dim);}
+.sl-clear-btn{padding:6px 12px;border-radius:20px;background:var(--bg3);color:var(--text3);font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .15s;}
+.sl-clear-btn:active{color:var(--text);background:var(--bg4);}
+.sl-mode-toggle{display:flex;background:var(--bg3);border-radius:var(--r-sm);padding:3px;margin-bottom:16px;}
+.sl-mode-btn{flex:1;padding:8px;border-radius:6px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s;border:none;font-family:'Inter',sans-serif;cursor:pointer;background:transparent;}
+.sl-mode-btn.active{background:var(--accent);color:#111;}
+.shopping-cat{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.5px;text-transform:uppercase;margin:14px 0 6px;padding-top:10px;border-top:1px solid var(--border);}
+.shopping-cat:first-of-type{border-top:none;margin-top:0;padding-top:0;}
+.shopping-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
 .shopping-item:last-child{border-bottom:none;}
-.shopping-check{width:24px;height:24px;border-radius:6px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:all .2s;flex-shrink:0;background:transparent;color:var(--text);font-family:'Inter',sans-serif;}
-.shopping-check.checked{border-color:var(--green);background:var(--green);color:#111;text-decoration:line-through;}
-.shopping-item-name{font-size:14px;flex:1;}
+.shopping-check{width:26px;height:26px;border-radius:7px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:all .2s;flex-shrink:0;background:transparent;color:var(--text);font-family:'Inter',sans-serif;}
+.shopping-check.checked{border-color:var(--green);background:var(--green);color:#111;}
+.shopping-item-name{font-size:14px;flex:1;line-height:1.3;}
 .shopping-item-name.bought{text-decoration:line-through;color:var(--text3);}
-.shopping-close{width:100%;padding:14px;border-radius:var(--r);background:var(--bg3);color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;margin-top:16px;border:none;font-family:'Inter',sans-serif;}
+.sl-custom-input-row{display:flex;gap:8px;margin-top:12px;}
+.sl-custom-input{flex:1;font-size:16px;padding:10px 12px;}
+.sl-custom-add{padding:10px 14px;border-radius:var(--r-sm);background:var(--accent);color:#111;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:'Inter',sans-serif;white-space:nowrap;transition:background .15s;}
+.sl-custom-add:active{background:var(--accent-dark);}
+.sl-custom-remove{width:30px;height:30px;border-radius:8px;background:var(--bg4);color:var(--text3);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;font-family:'Inter',sans-serif;flex-shrink:0;transition:all .15s;}
+.sl-custom-remove:active{background:var(--red-dim);color:var(--red);}
+.shopping-close{width:100%;padding:14px;border-radius:var(--r);background:var(--bg3);color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;margin-top:20px;border:none;font-family:'Inter',sans-serif;transition:background .15s;}
+.shopping-close:active{background:var(--bg4);}
 
 /* ── RESTAURANT MODE ── */
 .restaurant-fab{position:fixed;bottom:88px;right:calc(50% - 230px);width:52px;height:52px;border-radius:50%;background:var(--accent);color:#111;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(232,184,75,.4);cursor:pointer;z-index:190;transition:transform .2s;border:none;font-family:'Inter',sans-serif;}
@@ -3099,68 +3115,192 @@ function closeReportModal(e){
 // PHASE 3: SHOPPING LIST
 // ═══════════════════════════════════════════
 let shoppingChecked={};
+let shoppingCustomItems=[];
+let shoppingMode='week';
 
-function generateShoppingList(){
+// ── Määrien parsiminen ja yhdistely ──
+function parseAmount(str){
+  if(!str) return {value:null,unit:str||''};
+  const s=str.trim();
+  // "80g", "3dl", "1rkl" — numero + yksikkö suoraan kiinni
+  let m=s.match(/^(\d+(?:[.,]\d+)?)\s*([a-zA-ZäöåÄÖÅ]+)$/);
+  if(m) return {value:parseFloat(m[1].replace(',','.')),unit:m[2].toLowerCase()};
+  // "2 kpl", "1 rkl" — numero + välilyönti + yksikkö
+  m=s.match(/^(\d+(?:[.,]\d+)?)\s+(\S+)$/);
+  if(m) return {value:parseFloat(m[1].replace(',','.')),unit:m[2].toLowerCase()};
+  return {value:null,unit:s};
+}
+
+function mergeAmounts(amounts){
+  if(!amounts.length) return '';
+  if(amounts.length===1) return amounts[0];
+  const parsed=amounts.map(parseAmount);
+  const units=[...new Set(parsed.map(p=>p.unit))];
+  if(units.length===1 && parsed.every(p=>p.value!==null)){
+    const sum=parsed.reduce((s,p)=>s+p.value,0);
+    const fmt=sum%1===0?sum.toString():sum.toFixed(1);
+    return fmt+units[0];
+  }
+  // Ei voi yhdistää — näytä uniikkeina
+  const unique=[...new Set(amounts)];
+  return unique.join(' + ');
+}
+
+// ── Kategoriointi ──
+function guessIngredientCat(name){
+  const n=name.toLowerCase();
+  if(/kana|naudan|porsaan|kalkkuna|jauheliha|liha/.test(n)) return 'Liha';
+  if(/lohi|tonnikala|kirjolohi|sei|katkarapu|kala/.test(n)) return 'Kala';
+  if(/riisi|pasta|leipä|baageli|quinoa|kaura|tortilla|hiutaleet|vehnä/.test(n)) return 'Vilja';
+  if(/maito|jogurtti|rahka|raejuusto|juusto|feta|kerma|proteiinijauhe|voi|kvark/.test(n)) return 'Maitotuotteet';
+  if(/banaani|mansikka|mustikka|omena|persikka|sitruuna|marjat|avokado|hedelmä/.test(n)) return 'Hedelmät';
+  if(/parsakaali|pinaatti|paprika|tomaatti|kurkku|sipuli|kesäkurpitsa|porkkana|peruna|bataatti|rucula|lehtikaali|salaatti/.test(n)) return 'Kasvikset';
+  if(/manteli|pähkinä|pellava|saksanpähkinä|cashew|siemen/.test(n)) return 'Pähkinät';
+  if(/kikherne|linssit|tofu|mustapapu|papu/.test(n)) return 'Palkokasvit';
+  if(/öljy|oliiviöljy|kookosöljy/.test(n)) return 'Öljyt & mausteet';
+  if(/hunaja|sokeri|siirapit|maple/.test(n)) return 'Öljyt & mausteet';
+  return 'Muut';
+}
+
+// ── Listan generointi ──
+function generateShoppingList(mode){
+  mode=mode||shoppingMode;
   const items={};
   state.mealPlan.forEach((meal,mi)=>{
     const opt=meal.options[state.selectedOptions[mi]||0];
     if(!opt||!opt.ingredients) return;
+    const multiplier=(mode==='week')?7:1;
     opt.ingredients.forEach(ing=>{
       const key=ing.n.toLowerCase().trim();
-      if(!items[key]){
-        items[key]={name:ing.n, amounts:[], cat:guessIngredientCat(ing.n)};
-      }
-      items[key].amounts.push(ing.a);
+      if(!items[key]) items[key]={name:ing.n,amounts:[],cat:guessIngredientCat(ing.n)};
+      for(let x=0;x<multiplier;x++) items[key].amounts.push(ing.a);
     });
   });
-
-  // Multiply by 7 for weekly
   const result={};
   Object.values(items).forEach(item=>{
     if(!result[item.cat]) result[item.cat]=[];
-    const amountStr=item.amounts[0]+(item.amounts.length>1?` (x${item.amounts.length})`:'')+' x7';
-    result[item.cat].push({name:item.name, amount:amountStr});
+    result[item.cat].push({name:item.name,amount:mergeAmounts(item.amounts)});
   });
   return result;
 }
 
-function guessIngredientCat(name){
-  const n=name.toLowerCase();
-  if(/kana|naudan|porsaan|kalkkunna|jauheliha/.test(n)) return 'Liha';
-  if(/lohi|tonnikala|kirjolohi|sei|katkarapu|kala/.test(n)) return 'Kala';
-  if(/riisi|pasta|leipä|baageli|quinoa|kaura|tortilla|hiutaleet/.test(n)) return 'Vilja';
-  if(/maito|jogurtti|rahka|raejuusto|juusto|feta|kerma|proteiinijauhe|voi/.test(n)) return 'Maitotuotteet';
-  if(/banaani|mansikka|mustikka|omena|persikka|sitruuna|marjat|avokado/.test(n)) return 'Hedelmät';
-  if(/parsakaali|pinaatti|paprika|tomaatti|kurkku|sipuli|kesäkurpitsa|porkkana|peruna|bataatti|rucula|lehtikaali/.test(n)) return 'Kasvikset';
-  if(/manteli|pähkinä|pellava|saksanpähkinä/.test(n)) return 'Pähkinät';
-  if(/kikherne|linssit|tofu|mustapapu/.test(n)) return 'Palkokasvit';
-  return 'Muut';
-}
-
-function renderShoppingList(){
-  const list=generateShoppingList();
+// ── Render ──
+async function renderShoppingList(mode){
+  if(mode) shoppingMode=mode;
+  shoppingChecked=(await load('shoppingChecked'))||{};
+  shoppingCustomItems=(await load('shoppingCustomItems'))||[];
+  const list=generateShoppingList(shoppingMode);
   const cats=Object.keys(list).sort();
   const content=document.getElementById('shopping-modal-content');
-  let html=`<div class="shopping-title">🛒 Ostoslista (viikko)</div>`;
-  cats.forEach(cat=>{
-    html+=`<div class="shopping-cat">${sanitize(cat)}</div>`;
-    list[cat].forEach((item,i)=>{
-      const key=cat+'-'+i;
+
+  let html=`
+    <div class="sl-toolbar">
+      <div class="shopping-title">🛒 Ostoslista</div>
+      <div class="sl-toolbar-actions">
+        <button class="sl-copy-btn" onclick="copyShoppingList()" title="Kopioi leikepöydälle">📋</button>
+        <button class="sl-clear-btn" onclick="clearShoppingChecked()">Tyhjennä</button>
+      </div>
+    </div>
+    <div class="sl-mode-toggle">
+      <button class="sl-mode-btn ${shoppingMode==='day'?'active':''}" onclick="renderShoppingList('day')">Tänään</button>
+      <button class="sl-mode-btn ${shoppingMode==='week'?'active':''}" onclick="renderShoppingList('week')">Viikko</button>
+    </div>`;
+
+  if(!cats.length){
+    html+=`<div style="text-align:center;padding:32px 0;color:var(--text3);font-size:14px;">Ei aineksia — valitse aterioita ensin</div>`;
+  } else {
+    cats.forEach(cat=>{
+      html+=`<div class="shopping-cat">${sanitize(cat)}</div>`;
+      list[cat].forEach((item,i)=>{
+        const key=cat+'-'+i;
+        const checked=shoppingChecked[key];
+        html+=`<div class="shopping-item">
+          <button class="shopping-check ${checked?'checked':''}" onclick="toggleShoppingItem('${sanitize(key)}')">${checked?'✓':''}</button>
+          <span class="shopping-item-name ${checked?'bought':''}">${sanitize(item.name)} <span style="color:var(--text3);font-size:12px;">— ${sanitize(item.amount)}</span></span>
+        </div>`;
+      });
+    });
+  }
+
+  // Omat lisäykset
+  html+=`<div class="shopping-cat" style="margin-top:${cats.length?'0':'8px'};">Omat lisäykset</div>`;
+  if(shoppingCustomItems.length){
+    shoppingCustomItems.forEach((item,i)=>{
+      const key='custom-'+i;
       const checked=shoppingChecked[key];
       html+=`<div class="shopping-item">
         <button class="shopping-check ${checked?'checked':''}" onclick="toggleShoppingItem('${sanitize(key)}')">${checked?'✓':''}</button>
-        <span class="shopping-item-name ${checked?'bought':''}">${sanitize(item.name)} — ${sanitize(item.amount)}</span>
+        <span class="shopping-item-name ${checked?'bought':''}">${sanitize(item)}</span>
+        <button class="sl-custom-remove" onclick="removeShoppingCustomItem(${i})">×</button>
       </div>`;
     });
-  });
+  } else {
+    html+=`<div style="font-size:13px;color:var(--text3);padding:6px 0 4px;">Ei omia tuotteita</div>`;
+  }
+  html+=`<div class="sl-custom-input-row">
+    <input class="sl-custom-input" id="sl-custom-input" type="text" placeholder="Lisää tuote..." onkeydown="if(event.key==='Enter')addShoppingCustomItem()">
+    <button class="sl-custom-add" onclick="addShoppingCustomItem()">+ Lisää</button>
+  </div>`;
   html+=`<button class="shopping-close" onclick="closeShoppingModal()">Sulje</button>`;
   content.innerHTML=html;
   document.getElementById('shopping-modal').style.display='flex';
 }
 
-function toggleShoppingItem(key){
+async function toggleShoppingItem(key){
   shoppingChecked[key]=!shoppingChecked[key];
+  await save('shoppingChecked',shoppingChecked);
   renderShoppingList();
+}
+
+async function clearShoppingChecked(){
+  shoppingChecked={};
+  await save('shoppingChecked',shoppingChecked);
+  renderShoppingList();
+  showToast('Valinnat tyhjennetty','success');
+}
+
+async function addShoppingCustomItem(){
+  const input=document.getElementById('sl-custom-input');
+  const val=input?.value.trim();
+  if(!val){showToast('Kirjoita tuotteen nimi','error');return;}
+  shoppingCustomItems.push(val);
+  await save('shoppingCustomItems',shoppingCustomItems);
+  renderShoppingList();
+}
+
+async function removeShoppingCustomItem(i){
+  shoppingCustomItems.splice(i,1);
+  await save('shoppingCustomItems',shoppingCustomItems);
+  renderShoppingList();
+}
+
+async function copyShoppingList(){
+  const list=generateShoppingList(shoppingMode);
+  const cats=Object.keys(list).sort();
+  const modeLabel=shoppingMode==='day'?'Tänään':'Viikko';
+  let text=`🛒 OSTOSLISTA — ${modeLabel}\n${'─'.repeat(28)}\n\n`;
+  cats.forEach(cat=>{
+    text+=`${cat.toUpperCase()}\n`;
+    list[cat].forEach(item=>{
+      const ck=Object.entries(shoppingChecked).find(([k])=>k.includes(item.name.substring(0,5).toLowerCase()));
+      text+=`${ck&&ck[1]?'✓':'□'} ${item.name} — ${item.amount}\n`;
+    });
+    text+='\n';
+  });
+  if(shoppingCustomItems.length){
+    text+=`OMAT LISÄYKSET\n`;
+    shoppingCustomItems.forEach(item=>{text+=`□ ${item}\n`;});
+  }
+  try{
+    await navigator.clipboard.writeText(text);
+    showToast('Lista kopioitu leikepöydälle 📋','success');
+  }catch(e){
+    const ta=document.createElement('textarea');
+    ta.value=text;ta.style.position='fixed';ta.style.top='-9999px';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Lista kopioitu leikepöydälle 📋','success');
+  }
 }
 
 function closeShoppingModal(e){
