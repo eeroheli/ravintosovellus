@@ -181,7 +181,9 @@ select option{background:var(--bg3);}
 .mc-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
 .mc-meal-name{font-size:13px;font-weight:700;color:var(--text2);letter-spacing:.3px;}
 .mc-pw-badge{font-size:10px;font-weight:700;background:var(--accent-dim);color:var(--accent);padding:3px 8px;border-radius:10px;letter-spacing:.5px;}
-.mc-options{padding:0 12px 12px;display:flex;flex-direction:column;gap:8px;}
+.mc-options{padding:0 12px 12px;display:flex;flex-direction:column;gap:8px;overflow:hidden;}
+.mc-options.mc-collapsed{height:0!important;overflow:hidden;opacity:0;padding-bottom:0;pointer-events:none;}
+.mc-options .mc-hidden{display:none;}
 .meal-option{background:var(--bg3);border-radius:var(--r-sm);padding:12px;cursor:pointer;transition:all .2s;border:1.5px solid transparent;display:flex;align-items:center;gap:12px;}
 .meal-option:hover{border-color:var(--border2);}
 .meal-option.selected{border-color:var(--accent);background:var(--accent-dim);}
@@ -198,6 +200,8 @@ select option{background:var(--bg3);}
 .mo-arrow{color:var(--text3);font-size:14px;}
 
 .mc-btns{display:flex;gap:8px;margin:4px 0 0;}
+.mc-collapse-btn{width:28px;height:28px;border-radius:8px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0;}
+.mc-collapse-btn:hover{border-color:var(--accent);color:var(--accent);}
 .mc-ai-btn,.mc-custom-btn{flex:1;padding:11px;border-radius:var(--r-sm);background:transparent;border:1.5px dashed var(--border2);color:var(--text2);font-size:13px;font-weight:600;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;}
 .mc-ai-btn:hover{border-color:var(--accent);color:var(--accent);}
 .mc-ai-btn.loading{pointer-events:none;opacity:.6;}
@@ -234,6 +238,9 @@ select option{background:var(--bg3);}
 .rm-select-btn:hover{background:var(--accent-dark);}
 .rm-delete-btn{width:100%;margin-top:8px;padding:12px;border-radius:var(--r);background:transparent;border:1.5px solid var(--red);color:var(--red);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
 .rm-delete-btn:hover{background:var(--red-dim);}
+.rm-edit-btn{width:100%;margin-top:8px;padding:12px;border-radius:var(--r);background:transparent;border:1.5px solid var(--border2);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.rm-edit-btn:hover{border-color:var(--accent);color:var(--accent);}
+.fav-badge{font-size:12px;margin-left:4px;vertical-align:middle;}
 
 /* Custom meal modal */
 .custom-modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 20px calc(32px + env(safe-area-inset-bottom));}
@@ -331,11 +338,19 @@ select option{background:var(--bg3);}
 .cm-ing-result .ir-macros{font-size:11px;color:var(--text2);text-align:right;}
 .cm-ing-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;background:var(--bg4);padding:10px 12px;border-radius:var(--r-sm);}
 .cm-ing-row .cm-ing-amount{width:56px;text-align:center;padding:6px 4px;font-size:14px;font-weight:700;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;}
-.cm-ing-row .cm-ing-unit{font-size:12px;color:var(--text3);min-width:12px;}
+.cm-ing-row .cm-ing-unit{font-size:12px;color:var(--text3);min-width:20px;}
+.cm-ing-unit.togglable{color:var(--accent);cursor:pointer;font-weight:700;border-bottom:1px dashed var(--accent);}
 .cm-ing-row .cm-ing-name{flex:1;font-size:13px;font-weight:600;}
 .cm-ing-row .cm-ing-macros{font-size:11px;color:var(--text2);white-space:nowrap;}
 .cm-macro-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
 .cm-macro-pill{background:var(--bg4);padding:10px 12px;border-radius:var(--r-sm);font-size:13px;font-weight:700;text-align:center;}
+
+/* Kuvatuonti */
+.cm-img-btn{width:100%;padding:11px;border-radius:var(--r-sm);background:linear-gradient(135deg,#1a1a2e,#16213e);border:1.5px dashed var(--accent);color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:all .2s;}
+.cm-img-btn:hover{background:var(--accent);color:#111;}
+.cm-img-preview{width:100%;max-height:160px;object-fit:cover;border-radius:var(--r-sm);margin-bottom:8px;display:block;}
+.cm-img-loading{font-size:12px;color:var(--text3);padding:6px 0;}
+.cm-img-result{margin-top:8px;}
 
 /* Hakutabit: Tietokanta / Kauppa */
 .cm-search-tabs{display:flex;gap:0;background:var(--bg3);border-radius:var(--r-sm);padding:3px;margin-bottom:8px;}
@@ -501,12 +516,25 @@ input[type=number]{-moz-appearance:textfield;}
 .day-nav-btn:hover{border-color:var(--accent);color:var(--accent);}
 .day-nav-label{font-size:13px;font-weight:600;color:var(--text2);min-width:80px;text-align:center;}
 
-/* ── AI PREFERENCE FORM ── */
-.ai-pref-form{background:var(--bg3);border-radius:var(--r-sm);padding:10px 12px;margin-top:6px;display:flex;gap:6px;align-items:center;}
-.ai-pref-form input{flex:1;padding:8px 10px;font-size:12px;background:var(--bg4);border:1px solid var(--border2);border-radius:6px;}
-.ai-pref-form button{padding:8px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;border:none;font-family:'Inter',sans-serif;}
-.ai-pref-form .aipf-gen{background:var(--accent);color:#111;}
-.ai-pref-form .aipf-skip{background:var(--bg4);color:var(--text2);}
+/* ── AI PREFERENCE PANEL ── */
+.ai-pref-panel{background:var(--bg2);border-radius:var(--r);padding:16px;margin-top:8px;border:1px solid var(--border2);}
+.app-section{margin-bottom:14px;}
+.app-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.app-opt{font-size:11px;font-weight:400;color:var(--text3);}
+.app-input{width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r-sm);font-size:13px;color:var(--text);box-sizing:border-box;font-family:'Inter',sans-serif;}
+.app-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+.app-chip{background:var(--accent-dim);border:1px solid var(--accent);border-radius:20px;padding:4px 10px;font-size:12px;display:flex;align-items:center;gap:5px;color:var(--text);}
+.app-chip button{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0;line-height:1;font-family:inherit;}
+.app-chip-row{display:flex;gap:6px;}
+.app-chip-input{flex:1;padding:8px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r-sm);font-size:13px;color:var(--text);font-family:'Inter',sans-serif;}
+.app-chip-add{width:36px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text2);font-size:20px;cursor:pointer;transition:all .15s;}
+.app-chip-add:hover{border-color:var(--accent);color:var(--accent);}
+.app-macro-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.app-macro-field{display:flex;flex-direction:column;gap:4px;}
+.app-macro-unit{font-size:11px;font-weight:600;color:var(--text3);text-align:center;}
+.app-macro-input{width:100%;padding:8px 4px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r-sm);font-size:14px;font-weight:700;text-align:center;color:var(--text);box-sizing:border-box;font-family:'Inter',sans-serif;}
+.app-generate-btn{width:100%;padding:14px;background:var(--accent);color:#111;border:none;border-radius:var(--r);font-size:15px;font-weight:800;cursor:pointer;transition:background .2s;margin-top:2px;font-family:'Inter',sans-serif;}
+.app-generate-btn:hover{background:var(--accent-dark);}
 
 /* ── REPORT MODAL ── */
 .report-modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 20px calc(32px + env(safe-area-inset-bottom));}
@@ -549,26 +577,12 @@ input[type=number]{-moz-appearance:textfield;}
 .shopping-close{width:100%;padding:14px;border-radius:var(--r);background:var(--bg3);color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;margin-top:20px;border:none;font-family:'Inter',sans-serif;transition:background .15s;}
 .shopping-close:active{background:var(--bg4);}
 
-/* ── RESTAURANT MODE ── */
-.restaurant-fab{position:fixed;bottom:88px;right:calc(50% - 230px);width:52px;height:52px;border-radius:50%;background:var(--accent);color:#111;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(232,184,75,.4);cursor:pointer;z-index:190;transition:transform .2s;border:none;font-family:'Inter',sans-serif;}
-.restaurant-fab:hover{transform:scale(1.1);}
-.restaurant-modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 20px calc(32px + env(safe-area-inset-bottom));}
-.restaurant-title{font-size:20px;font-weight:800;margin-bottom:6px;}
-.restaurant-sub{font-size:13px;color:var(--text2);margin-bottom:16px;}
-.restaurant-remaining{background:var(--bg3);border-radius:var(--r);padding:14px;margin-bottom:16px;}
-.restaurant-remaining-title{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;}
-.restaurant-remaining-macros{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;}
-.restaurant-remaining-macros .rrm{font-size:13px;font-weight:700;}
-.restaurant-remaining-macros .rrm-label{font-size:10px;color:var(--text3);font-weight:600;}
-.restaurant-field{margin-bottom:12px;}
-.restaurant-field label{font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px;}
-.restaurant-actions{display:flex;gap:8px;margin-top:16px;}
-.restaurant-actions button{flex:1;padding:14px;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:'Inter',sans-serif;}
-.restaurant-actions .ra-generate{background:var(--accent);color:#111;}
-.restaurant-actions .ra-close{background:var(--bg3);color:var(--text2);}
-.restaurant-suggestion{background:var(--bg3);border-radius:var(--r);padding:14px;margin-top:12px;border-left:3px solid var(--accent);}
-.restaurant-suggestion-title{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:6px;}
-.restaurant-suggestion-text{font-size:14px;line-height:1.6;color:var(--text2);}
+/* ── AI RECIPE ── */
+.ai-recipe-card{background:var(--bg3);border-radius:var(--r);padding:14px;margin-top:12px;border-left:3px solid var(--accent);}
+.arc-emoji{font-size:28px;text-align:center;margin-bottom:6px;}
+.arc-title{font-size:15px;font-weight:800;margin-bottom:4px;}
+.arc-desc{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:10px;}
+.arc-macros{display:flex;gap:10px;font-size:13px;font-weight:700;margin-bottom:10px;flex-wrap:wrap;}
 
 /* ── OFFLINE BADGE ── */
 .offline-badge{position:fixed;top:8px;right:8px;background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;z-index:999;display:none;}
@@ -645,8 +659,6 @@ input[type=number]{-moz-appearance:textfield;}
     <div id="settings-content"></div>
   </div>
 
-  <!-- Restaurant FAB -->
-  <button class="restaurant-fab" id="restaurant-fab" onclick="openRestaurantMode()">🍽️</button>
 
 </div>
 
@@ -696,10 +708,8 @@ input[type=number]{-moz-appearance:textfield;}
   <div class="shopping-modal" id="shopping-modal-content"></div>
 </div>
 
-<!-- Restaurant Modal -->
-<div class="modal-overlay" id="restaurant-modal" style="display:none;" onclick="closeRestaurantModal(event)">
-  <div class="restaurant-modal" id="restaurant-modal-content"></div>
-</div>
+<!-- Kuvaresepti input (piilotettu) -->
+<input type="file" id="recipe-img-input" accept="image/*" style="display:none" onchange="handleRecipeImage(this)">
 
 <!-- Diary Add Modal -->
 <div class="modal-overlay" id="diary-add-modal" style="display:none;" onclick="closeDiaryAddModal(event)">
@@ -861,188 +871,172 @@ const AVAILABLE_MEALS = [
 ];
 
 // ═══════════════════════════════════════════
-// AINESOSA-TIETOKANTA (per 100g)
+// KPL-PAINOT (hedelmät, kasvikset, munat) — grammaa per kappale
+// ═══════════════════════════════════════════
+const KPL_WEIGHTS={
+  'banaani':120,'omena':180,'appelsiini':200,'mandariini':80,'sitruuna':100,'lime':50,
+  'kananmuna':60,'muna':60,'kivi':80,'kiwi':80,'mango':300,'vesimeloni':300,
+  'tomaatti':100,'kurkku':200,'paprika':150,'porkkana':80,'peruna':150,
+  'bataatti':200,'sipuli':150,'parsakaali':150,'kukkakaali':150,'punajuuri':150,
+  'lansikka':12,'vadelma':5,'mansikka':12,'mustikka':2,
+};
+function getKplWeight(name){
+  const n=name.toLowerCase();
+  for(const [k,w] of Object.entries(KPL_WEIGHTS)){if(n.includes(k)) return w;}
+  return null;
+}
+
+// ═══════════════════════════════════════════
+// PERUSTUOTTEET — suosituimmat ~40 tuotetta (per 100g)
 // ═══════════════════════════════════════════
 const AINESOSA_DB = [
-  // ── LIHA ──
-  {name:'Kanafilee',                  kcal:110, protein:23.1, carbs:0,    fat:1.3,  cat:'Liha'},
-  {name:'Kanankoipireisi',            kcal:177, protein:18,   carbs:0,    fat:11,   cat:'Liha'},
-  {name:'Kanarintafilee',             kcal:107, protein:22,   carbs:0,    fat:2,    cat:'Liha'},
-  {name:'Kanansiipi',                 kcal:203, protein:19,   carbs:0,    fat:14,   cat:'Liha'},
-  {name:'Kalkkunafilee',              kcal:104, protein:24,   carbs:0,    fat:1,    cat:'Liha'},
-  {name:'Kalkkunan jauheliha',        kcal:149, protein:21,   carbs:0,    fat:7,    cat:'Liha'},
-  {name:'Naudan jauheliha 10%',       kcal:176, protein:20,   carbs:0,    fat:10,   cat:'Liha'},
-  {name:'Naudan jauheliha 17%',       kcal:224, protein:18,   carbs:0,    fat:17,   cat:'Liha'},
-  {name:'Naudan ulkofilee',           kcal:131, protein:22,   carbs:0,    fat:5,    cat:'Liha'},
-  {name:'Naudan sisäfilee',           kcal:138, protein:22,   carbs:0,    fat:5.5,  cat:'Liha'},
-  {name:'Entrecôte',                  kcal:218, protein:19,   carbs:0,    fat:15,   cat:'Liha'},
-  {name:'Naudan paisti',              kcal:152, protein:21,   carbs:0,    fat:7,    cat:'Liha'},
-  {name:'Porsaanfilee',               kcal:143, protein:23,   carbs:0,    fat:5,    cat:'Liha'},
-  {name:'Porsaan ulkofilee',          kcal:121, protein:22,   carbs:0,    fat:3.5,  cat:'Liha'},
-  {name:'Porsaan sisäfilee',          kcal:109, protein:22,   carbs:0,    fat:2.5,  cat:'Liha'},
-  {name:'Kana- & kalkkunamakkara',    kcal:155, protein:15,   carbs:3,    fat:9,    cat:'Liha'},
-  {name:'Meetvursti (kana)',           kcal:230, protein:18,   carbs:2,    fat:17,   cat:'Liha'},
-  {name:'Kinkku (keitetty, viipaleet)',kcal:107, protein:18,  carbs:1,    fat:3.5,  cat:'Liha'},
-  {name:'Kana strippit (paahdettu)',   kcal:165, protein:25,  carbs:3,    fat:6,    cat:'Liha'},
-  // ── KALA & MERENELÄIMET ──
-  {name:'Lohifilee',                  kcal:208, protein:20,   carbs:0,    fat:13,   cat:'Kala'},
-  {name:'Kirjolohi',                  kcal:141, protein:20,   carbs:0,    fat:6.6,  cat:'Kala'},
-  {name:'Tonnikala (vedessä)',         kcal:116, protein:26,  carbs:0,    fat:1,    cat:'Kala'},
-  {name:'Tonnikala (öljyssä, valuttu)',kcal:198, protein:25,  carbs:0,    fat:10,   cat:'Kala'},
-  {name:'Seifilee (pakaste)',          kcal:74,  protein:17,  carbs:0,    fat:0.5,  cat:'Kala'},
-  {name:'Sei (tuore)',                 kcal:82,  protein:18,  carbs:0,    fat:0.9,  cat:'Kala'},
-  {name:'Hauki',                       kcal:88,  protein:19,  carbs:0,    fat:1.1,  cat:'Kala'},
-  {name:'Makrilli (vedessä)',          kcal:156, protein:21,  carbs:0,    fat:8,    cat:'Kala'},
-  {name:'Sardiini (öljyssä, valuttu)', kcal:208, protein:25,  carbs:0,    fat:12,   cat:'Kala'},
-  {name:'Katkarapu',                   kcal:85,  protein:20,  carbs:0,    fat:0.5,  cat:'Kala'},
-  {name:'Simpukka (keitetty)',         kcal:86,  protein:18,  carbs:2,    fat:1.4,  cat:'Kala'},
-  {name:'Tilapia',                     kcal:96,  protein:20,  carbs:0,    fat:2,    cat:'Kala'},
-  // ── MAITOTUOTTEET & MUNAT ──
-  {name:'Kananmuna (1kpl≈60g)',        kcal:155, protein:13,  carbs:1.1,  fat:11,   cat:'Maito'},
-  {name:'Munanvalkuainen (1kpl≈35g)',  kcal:52,  protein:11,  carbs:0.7,  fat:0.2,  cat:'Maito'},
-  {name:'Kreikkalainen jogurtti 0%',   kcal:57,  protein:10,  carbs:3.6,  fat:0.4,  cat:'Maito'},
-  {name:'Kreikkalainen jogurtti 2%',   kcal:73,  protein:9,   carbs:3.9,  fat:2,    cat:'Maito'},
-  {name:'Skyr (luonnonjogurtti)',       kcal:63,  protein:11,  carbs:4,    fat:0.2,  cat:'Maito'},
-  {name:'Maitorahka',                  kcal:64,  protein:11,  carbs:3.8,  fat:0.5,  cat:'Maito'},
-  {name:'Raejuusto',                   kcal:87,  protein:12,  carbs:1.5,  fat:4,    cat:'Maito'},
-  {name:'Raejuusto 0%',                kcal:70,  protein:13,  carbs:2,    fat:0.3,  cat:'Maito'},
-  {name:'Maito 1%',                    kcal:42,  protein:3.4, carbs:5,    fat:1,    cat:'Maito'},
-  {name:'Maito 3%',                    kcal:61,  protein:3.2, carbs:4.8,  fat:3.2,  cat:'Maito'},
-  {name:'Kauramaito (ei makeutettu)',  kcal:44,  protein:1,   carbs:6.7,  fat:1.5,  cat:'Maito'},
-  {name:'Soijamaito (ei makeutettu)', kcal:33,  protein:3,   carbs:1.6,  fat:1.8,  cat:'Maito'},
-  {name:'Juusto Edam (17%)',           kcal:252, protein:28,  carbs:0,    fat:16,   cat:'Maito'},
-  {name:'Juusto Edam (26%)',           kcal:313, protein:25,  carbs:0,    fat:24,   cat:'Maito'},
-  {name:'Fetajuusto',                  kcal:264, protein:14,  carbs:4,    fat:21,   cat:'Maito'},
-  {name:'Mozzarella (light)',          kcal:172, protein:19,  carbs:2,    fat:10,   cat:'Maito'},
-  {name:'Riccotta',                    kcal:136, protein:9,   carbs:3,    fat:10,   cat:'Maito'},
-  {name:'Kreikkalainen jogurtti (proteiini)',kcal:84,protein:15,carbs:4,  fat:0.4,  cat:'Maito'},
-  {name:'Proteiinijauhe whey (vanilja)',kcal:378, protein:76,  carbs:7,    fat:5,    cat:'Lisäravinteet'},
-  {name:'Proteiinijauhe whey (suklaa)', kcal:375, protein:75,  carbs:8,    fat:5,    cat:'Lisäravinteet'},
-  {name:'Kaseiiniproteiini',            kcal:360, protein:78,  carbs:5,    fat:2,    cat:'Lisäravinteet'},
-  {name:'Heraproteiini-isolaatti (WPI)',kcal:360, protein:87,  carbs:3,    fat:1,    cat:'Lisäravinteet'},
-  {name:'Kasviperäinen proteiinijauhe', kcal:350, protein:70,  carbs:10,   fat:5,    cat:'Lisäravinteet'},
-  {name:'Proteiinipuuro (valmis)',      kcal:105, protein:10,  carbs:12,   fat:2,    cat:'Lisäravinteet'},
-  {name:'Proteiinipatukka (esim. Fulfil)',kcal:192,protein:20, carbs:20,   fat:7,    cat:'Lisäravinteet'},
-  {name:'BCAA-jauhe (maustamaton)',     kcal:40,  protein:10,  carbs:0,    fat:0,    cat:'Lisäravinteet'},
-  {name:'Kreatiinijauhe',               kcal:0,   protein:0,   carbs:0,    fat:0,    cat:'Lisäravinteet'},
-  {name:'Dextroosi (urheilusokerijauhe)',kcal:383,protein:0,   carbs:96,   fat:0,    cat:'Lisäravinteet'},
-  // ── VILJATUOTTEET & HIILIHYDRAATIT ──
-  {name:'Kaurahiutaleet',              kcal:379, protein:13,  carbs:56,   fat:7,    cat:'Vilja'},
-  {name:'Kaurahiutaleet (pikahiutaleet)',kcal:370,protein:12, carbs:58,   fat:7,    cat:'Vilja'},
-  {name:'Riisi (raaka, jasmiini)',     kcal:360, protein:7,   carbs:80,   fat:0.6,  cat:'Vilja'},
-  {name:'Riisi (keitetty)',            kcal:130, protein:2.7, carbs:28,   fat:0.3,  cat:'Vilja'},
-  {name:'Basmatiriisi (keitetty)',     kcal:121, protein:2.7, carbs:26,   fat:0.3,  cat:'Vilja'},
-  {name:'Täysjyväriisi (keitetty)',    kcal:112, protein:2.6, carbs:23,   fat:0.9,  cat:'Vilja'},
-  {name:'Pasta (raaka)',               kcal:348, protein:13,  carbs:62,   fat:2.5,  cat:'Vilja'},
-  {name:'Pasta (keitetty)',            kcal:157, protein:6,   carbs:30,   fat:1,    cat:'Vilja'},
-  {name:'Täysjyväpasta (keitetty)',    kcal:149, protein:6.5, carbs:28,   fat:1.1,  cat:'Vilja'},
-  {name:'Täysjyväleipä',              kcal:220, protein:8,   carbs:38,   fat:3,    cat:'Vilja'},
-  {name:'Ruisleipä',                   kcal:206, protein:6,   carbs:40,   fat:1.2,  cat:'Vilja'},
-  {name:'Ruisnäkkileipä',             kcal:332, protein:9,   carbs:64,   fat:2,    cat:'Vilja'},
-  {name:'Quinoa (keitetty)',           kcal:120, protein:4.4, carbs:21,   fat:1.9,  cat:'Vilja'},
-  {name:'Bataatti',                    kcal:86,  protein:1.6, carbs:20,   fat:0.1,  cat:'Vilja'},
-  {name:'Peruna',                      kcal:77,  protein:2,   carbs:17,   fat:0.1,  cat:'Vilja'},
-  {name:'Peruna (keitetty, kuorittu)', kcal:72,  protein:1.7, carbs:16,   fat:0.1,  cat:'Vilja'},
-  {name:'Baageli',                     kcal:270, protein:10,  carbs:50,   fat:2,    cat:'Vilja'},
-  {name:'Tortilla (vehnä)',            kcal:312, protein:8,   carbs:52,   fat:8,    cat:'Vilja'},
-  {name:'Polenta (keitetty)',          kcal:71,  protein:1.5, carbs:15,   fat:0.5,  cat:'Vilja'},
-  {name:'Spelttipasta (keitetty)',     kcal:143, protein:6,   carbs:27,   fat:1,    cat:'Vilja'},
-  {name:'Tattari (keitetty)',          kcal:92,  protein:3.4, carbs:19,   fat:0.6,  cat:'Vilja'},
-  {name:'Maissi (säilyke)',            kcal:86,  protein:3.2, carbs:18,   fat:1.2,  cat:'Vilja'},
-  // ── KASVIKSET ──
-  {name:'Parsakaali',                  kcal:34,  protein:2.8, carbs:7,    fat:0.4,  cat:'Kasvis'},
-  {name:'Pinaatti',                    kcal:23,  protein:2.9, carbs:3.6,  fat:0.4,  cat:'Kasvis'},
-  {name:'Pakastettu pinaatti',         kcal:21,  protein:2.7, carbs:2.8,  fat:0.3,  cat:'Kasvis'},
-  {name:'Paprika (punainen)',          kcal:31,  protein:1,   carbs:6,    fat:0.3,  cat:'Kasvis'},
-  {name:'Paprika (keltainen)',         kcal:27,  protein:1,   carbs:5.7,  fat:0.2,  cat:'Kasvis'},
-  {name:'Tomaatti',                    kcal:18,  protein:0.9, carbs:3.9,  fat:0.2,  cat:'Kasvis'},
-  {name:'Kurkku',                      kcal:15,  protein:0.7, carbs:3.6,  fat:0.1,  cat:'Kasvis'},
-  {name:'Sipuli',                      kcal:40,  protein:1.1, carbs:9,    fat:0.1,  cat:'Kasvis'},
-  {name:'Valkosipuli',                 kcal:149, protein:6.4, carbs:33,   fat:0.5,  cat:'Kasvis'},
-  {name:'Kesäkurpitsa',                kcal:17,  protein:1.2, carbs:3.1,  fat:0.3,  cat:'Kasvis'},
-  {name:'Porkkana',                    kcal:41,  protein:0.9, carbs:10,   fat:0.2,  cat:'Kasvis'},
-  {name:'Selleri',                     kcal:16,  protein:0.7, carbs:3,    fat:0.2,  cat:'Kasvis'},
-  {name:'Lehtisalaatti (miksi)',       kcal:20,  protein:2,   carbs:2.8,  fat:0.4,  cat:'Kasvis'},
-  {name:'Ruusukaali',                  kcal:43,  protein:3.4, carbs:9,    fat:0.3,  cat:'Kasvis'},
-  {name:'Kukkakaali',                  kcal:25,  protein:1.9, carbs:5,    fat:0.3,  cat:'Kasvis'},
-  {name:'Lehtikaali (kale)',           kcal:49,  protein:4.3, carbs:9,    fat:0.9,  cat:'Kasvis'},
-  {name:'Valkokaali',                  kcal:25,  protein:1.3, carbs:5.8,  fat:0.1,  cat:'Kasvis'},
-  {name:'Punajuuri (keitetty)',        kcal:44,  protein:1.7, carbs:10,   fat:0.2,  cat:'Kasvis'},
-  {name:'Herne (pakaste)',             kcal:81,  protein:5.4, carbs:14,   fat:0.4,  cat:'Kasvis'},
-  {name:'Parsa (vihreä)',              kcal:20,  protein:2.2, carbs:3.9,  fat:0.1,  cat:'Kasvis'},
-  {name:'Sienet (herkkusieni)',        kcal:22,  protein:3.1, carbs:3.3,  fat:0.3,  cat:'Kasvis'},
-  {name:'Palsternakka',                kcal:75,  protein:1.2, carbs:18,   fat:0.3,  cat:'Kasvis'},
-  // ── HEDELMÄT & MARJAT ──
-  {name:'Banaani',                     kcal:89,  protein:1.1, carbs:23,   fat:0.3,  cat:'Hedelmä'},
-  {name:'Banaani (kypsä, iso)',        kcal:96,  protein:1.2, carbs:25,   fat:0.3,  cat:'Hedelmä'},
-  {name:'Mustikka',                    kcal:57,  protein:0.7, carbs:14,   fat:0.3,  cat:'Hedelmä'},
-  {name:'Mansikka',                    kcal:32,  protein:0.7, carbs:8,    fat:0.3,  cat:'Hedelmä'},
-  {name:'Omena',                       kcal:52,  protein:0.3, carbs:14,   fat:0.2,  cat:'Hedelmä'},
-  {name:'Avokado',                     kcal:160, protein:2,   carbs:9,    fat:15,   cat:'Hedelmä'},
-  {name:'Appelsiini',                  kcal:47,  protein:0.9, carbs:12,   fat:0.1,  cat:'Hedelmä'},
-  {name:'Vesimeloni',                  kcal:30,  protein:0.6, carbs:7.5,  fat:0.2,  cat:'Hedelmä'},
-  {name:'Vadelma',                     kcal:52,  protein:1.2, carbs:12,   fat:0.7,  cat:'Hedelmä'},
-  {name:'Karpalo (pakaste)',           kcal:46,  protein:0.4, carbs:12,   fat:0.1,  cat:'Hedelmä'},
-  {name:'Ananas',                      kcal:50,  protein:0.5, carbs:13,   fat:0.1,  cat:'Hedelmä'},
-  {name:'Mango',                       kcal:60,  protein:0.8, carbs:15,   fat:0.4,  cat:'Hedelmä'},
-  {name:'Päärynä',                     kcal:57,  protein:0.4, carbs:15,   fat:0.1,  cat:'Hedelmä'},
-  {name:'Kiivi',                       kcal:61,  protein:1.1, carbs:15,   fat:0.5,  cat:'Hedelmä'},
-  {name:'Luumu (kuivattu)',            kcal:240, protein:2.2, carbs:64,   fat:0.4,  cat:'Hedelmä'},
-  {name:'Medjool-taateli',             kcal:277, protein:1.8, carbs:75,   fat:0.2,  cat:'Hedelmä'},
-  // ── PÄHKINÄT, SIEMENET & ÖLJYT ──
-  {name:'Manteli',                     kcal:579, protein:21,  carbs:22,   fat:50,   cat:'Pähkinä'},
-  {name:'Mantelivoi',                  kcal:614, protein:21,  carbs:19,   fat:56,   cat:'Pähkinä'},
-  {name:'Maapähkinävoi',               kcal:588, protein:25,  carbs:20,   fat:50,   cat:'Pähkinä'},
-  {name:'Cashewpähkinä',               kcal:553, protein:18,  carbs:30,   fat:44,   cat:'Pähkinä'},
-  {name:'Saksanpähkinä',               kcal:654, protein:15,  carbs:14,   fat:65,   cat:'Pähkinä'},
-  {name:'Seesaminsiemen',              kcal:573, protein:17,  carbs:23,   fat:50,   cat:'Pähkinä'},
-  {name:'Chiasiemen',                  kcal:486, protein:17,  carbs:42,   fat:31,   cat:'Pähkinä'},
-  {name:'Pellavasiemen (jauhettu)',     kcal:534, protein:18,  carbs:29,   fat:42,   cat:'Pähkinä'},
-  {name:'Auringonkukansiemen',         kcal:584, protein:21,  carbs:20,   fat:51,   cat:'Pähkinä'},
-  {name:'Kurpitsan siemen',            kcal:559, protein:30,  carbs:11,   fat:49,   cat:'Pähkinä'},
-  {name:'Pistaasi',                    kcal:560, protein:20,  carbs:28,   fat:45,   cat:'Pähkinä'},
-  {name:'Oliiviöljy',                  kcal:884, protein:0,   carbs:0,    fat:100,  cat:'Öljy'},
-  {name:'Kookosöljy',                  kcal:862, protein:0,   carbs:0,    fat:100,  cat:'Öljy'},
-  {name:'Voi',                         kcal:717, protein:0.9, carbs:0.1,  fat:81,   cat:'Öljy'},
-  {name:'Rypsiöljy',                   kcal:884, protein:0,   carbs:0,    fat:100,  cat:'Öljy'},
-  // ── PALKOKASVIT ──
-  {name:'Kikherneet (keitetty)',       kcal:164, protein:9,   carbs:27,   fat:2.6,  cat:'Palko'},
-  {name:'Mustapapu (keitetty)',        kcal:132, protein:9,   carbs:24,   fat:0.5,  cat:'Palko'},
-  {name:'Kidneypavut (säilyke)',       kcal:127, protein:8.7, carbs:22,   fat:0.5,  cat:'Palko'},
-  {name:'Linssit (punaiset, keitetty)',kcal:116, protein:9,   carbs:20,   fat:0.4,  cat:'Palko'},
-  {name:'Linssit (vihreät, keitetty)',kcal:116, protein:9,   carbs:20,   fat:0.4,  cat:'Palko'},
-  {name:'Tofu (silken)',               kcal:55,  protein:5,   carbs:2,    fat:2.7,  cat:'Palko'},
-  {name:'Tofu (firm)',                 kcal:76,  protein:8,   carbs:1.9,  fat:4.8,  cat:'Palko'},
-  {name:'Tempeh',                      kcal:193, protein:19,  carbs:9,    fat:11,   cat:'Palko'},
-  {name:'Edamame (keitetty)',          kcal:122, protein:11,  carbs:10,   fat:5,    cat:'Palko'},
-  {name:'Valkopapu (säilyke)',         kcal:95,  protein:6.7, carbs:17,   fat:0.4,  cat:'Palko'},
-  // ── MAITOTUOTTEET JA MEIJERITUOTTEET ──
-  {name:'Kermaviili',                  kcal:184, protein:2.8, carbs:3.5,  fat:18,   cat:'Maito'},
-  {name:'Kerma (15%)',                 kcal:155, protein:3,   carbs:3.5,  fat:15,   cat:'Maito'},
-  {name:'Kerma (35%)',                 kcal:337, protein:2.6, carbs:3.1,  fat:35,   cat:'Maito'},
-  {name:'Creme fraiche (13%)',         kcal:131, protein:2.5, carbs:3.5,  fat:12,   cat:'Maito'},
-  // ── MUUT ──
-  {name:'Hunaja',                      kcal:304, protein:0.3, carbs:82,   fat:0,    cat:'Muu'},
-  {name:'Soijakastike',                kcal:53,  protein:8,   carbs:5,    fat:0,    cat:'Muu'},
-  {name:'Tomaattimurska (säilyke)',    kcal:26,  protein:1,   carbs:5,    fat:0.1,  cat:'Muu'},
-  {name:'Tomaattipyree',               kcal:82,  protein:4,   carbs:17,   fat:0.4,  cat:'Muu'},
-  {name:'Granola (vähäsokerinen)',     kcal:400, protein:12,  carbs:55,   fat:15,   cat:'Muu'},
-  {name:'Kookosmaito',                 kcal:197, protein:2.2, carbs:2.7,  fat:21,   cat:'Muu'},
-  {name:'Kookosmaito (kevyt)',         kcal:85,  protein:1,   carbs:3,    fat:8,    cat:'Muu'},
-  {name:'Pesto',                       kcal:313, protein:5,   carbs:5,    fat:31,   cat:'Muu'},
-  {name:'Hummus',                      kcal:177, protein:8,   carbs:14,   fat:11,   cat:'Muu'},
-  {name:'Sriracha-kastike',            kcal:93,  protein:1,   carbs:18,   fat:1.5,  cat:'Muu'},
-  {name:'Mustard (sinappi)',           kcal:66,  protein:4.4, carbs:5.8,  fat:3.3,  cat:'Muu'},
-  {name:'Ketšuppi',                    kcal:112, protein:1.6, carbs:27,   fat:0.1,  cat:'Muu'},
-  {name:'Worcestershire-kastike',      kcal:78,  protein:1,   carbs:19,   fat:0,    cat:'Muu'},
-  {name:'Kaakaojauhe (maustamaton)',   kcal:228, protein:20,  carbs:58,   fat:14,   cat:'Muu'},
-  {name:'Stevia (makeutusaine)',       kcal:0,   protein:0,   carbs:0,    fat:0,    cat:'Muu'},
-  {name:'Erytritoli',                  kcal:20,  protein:0,   carbs:100,  fat:0,    cat:'Muu'},
-  {name:'Kaurapuuro (valmis, vesi)',   kcal:71,  protein:2.5, carbs:12,   fat:1.5,  cat:'Muu'},
-  {name:'Riisikakku',                  kcal:385, protein:8,   carbs:82,   fat:2.5,  cat:'Muu'},
-  {name:'Maissilastut (tortilla chips)',kcal:489,protein:7,   carbs:63,   fat:24,   cat:'Muu'},
-  {name:'Appelsiinimehu (100%)',       kcal:45,  protein:0.7, carbs:10,   fat:0.2,  cat:'Muu'},
-  {name:'Kookosmaito (juoma)',         kcal:21,  protein:0.2, carbs:2.6,  fat:1,    cat:'Muu'},
+  {"name":"Broilerin rintafilee (raaka)","kcal":110,"protein":23.0,"carbs":0,"fat":1.5},
+  {"name":"Broilerin rintafilee (kypsä)","kcal":165,"protein":31.0,"carbs":0,"fat":3.5},
+  {"name":"Kalkkunan rintafilee","kcal":112,"protein":24.0,"carbs":0,"fat":1.5},
+  {"name":"Naudan jauheliha 17%","kcal":253,"protein":20.0,"carbs":0,"fat":19.0},
+  {"name":"Naudan jauheliha 7%","kcal":158,"protein":21.0,"carbs":0,"fat":8.0},
+  {"name":"Porsaan sisäfilee","kcal":121,"protein":22.0,"carbs":0,"fat":3.5},
+  {"name":"Lohi (raaka)","kcal":208,"protein":20.0,"carbs":0,"fat":14.0},
+  {"name":"Tonnikala vedessä (säilyke)","kcal":96,"protein":22.0,"carbs":0,"fat":1.0},
+  {"name":"Seiti (raaka)","kcal":79,"protein":18.0,"carbs":0,"fat":0.5},
+  {"name":"Katkarapu (keitetty)","kcal":99,"protein":21.0,"carbs":0,"fat":1.5},
+  {"name":"Kananmuna (kokonainen)","kcal":155,"protein":13.0,"carbs":1.0,"fat":11.0},
+  {"name":"Munanvalkuainen","kcal":52,"protein":11.0,"carbs":0.7,"fat":0.2},
+  {"name":"Rahka 0% rasva","kcal":62,"protein":12.0,"carbs":3.0,"fat":0.2},
+  {"name":"Kvarg 0% rasva","kcal":60,"protein":11.0,"carbs":3.0,"fat":0.2},
+  {"name":"Kreikkalainen jogurtti 0%","kcal":57,"protein":10.0,"carbs":4.0,"fat":0.0},
+  {"name":"Raejuusto (cottage cheese)","kcal":98,"protein":11.0,"carbs":3.6,"fat":4.0},
+  {"name":"Maito 1,5%","kcal":48,"protein":3.4,"carbs":5.0,"fat":1.5},
+  {"name":"Maito rasvaton","kcal":38,"protein":3.6,"carbs":4.9,"fat":0.1},
+  {"name":"Riisi (kuiva)","kcal":352,"protein":7.0,"carbs":78.0,"fat":0.6},
+  {"name":"Kaurahiutaleet","kcal":372,"protein":13.0,"carbs":60.0,"fat":7.0},
+  {"name":"Pasta (kuiva)","kcal":352,"protein":12.0,"carbs":72.0,"fat":1.5},
+  {"name":"Täysjyväleipä","kcal":245,"protein":9.0,"carbs":44.0,"fat":2.5},
+  {"name":"Peruna (keitetty)","kcal":77,"protein":2.0,"carbs":17.0,"fat":0.1},
+  {"name":"Bataatti (raaka)","kcal":86,"protein":1.6,"carbs":20.0,"fat":0.1},
+  {"name":"Parsakaali","kcal":34,"protein":2.8,"carbs":7.0,"fat":0.4},
+  {"name":"Pinaatti","kcal":23,"protein":2.9,"carbs":3.6,"fat":0.4},
+  {"name":"Kurkku","kcal":15,"protein":0.6,"carbs":3.0,"fat":0.1},
+  {"name":"Tomaatti","kcal":18,"protein":0.9,"carbs":3.9,"fat":0.2},
+  {"name":"Porkkana","kcal":41,"protein":0.9,"carbs":10.0,"fat":0.2},
+  {"name":"Paprika (punainen)","kcal":26,"protein":1.0,"carbs":5.4,"fat":0.3},
+  {"name":"Banaani","kcal":89,"protein":1.1,"carbs":23.0,"fat":0.3},
+  {"name":"Omena","kcal":52,"protein":0.3,"carbs":14.0,"fat":0.2},
+  {"name":"Mustikka","kcal":57,"protein":0.7,"carbs":14.0,"fat":0.5},
+  {"name":"Avokado","kcal":160,"protein":2.0,"carbs":9.0,"fat":15.0},
+  {"name":"Oliiviöljy","kcal":900,"protein":0,"carbs":0,"fat":100.0},
+  {"name":"Heraproteiini (whey)","kcal":380,"protein":80.0,"carbs":5.0,"fat":3.0},
+  {"name":"Kaseiiniproteiini","kcal":370,"protein":80.0,"carbs":5.0,"fat":2.0},
+  {"name":"Kreatiinimonohydraatti","kcal":0,"protein":0,"carbs":0,"fat":0},
+  // Kanan muunnokset
+  {"name":"Kananfilee (raaka)","kcal":110,"protein":23.0,"carbs":0,"fat":1.5},
+  {"name":"Kananfilee (kypsä/paistettu)","kcal":165,"protein":31.0,"carbs":0,"fat":3.5},
+  {"name":"Maitorahka (Valio)","kcal":62,"protein":12.0,"carbs":3.0,"fat":0.2},
+  // Maitotuotteet lisää
+  {"name":"Voi","kcal":740,"protein":0.6,"carbs":0.6,"fat":82.0},
+  {"name":"Kerma ruoka- 15%","kcal":150,"protein":2.8,"carbs":3.8,"fat":15.0},
+  {"name":"Kuohukerma 35%","kcal":345,"protein":2.4,"carbs":3.4,"fat":35.0},
+  {"name":"Hapankerma / smetana 15%","kcal":150,"protein":2.8,"carbs":3.8,"fat":15.0},
+  {"name":"Emmental-juusto","kcal":395,"protein":29.0,"carbs":0.4,"fat":30.0},
+  {"name":"Cheddar-juusto","kcal":403,"protein":25.0,"carbs":1.3,"fat":33.0},
+  {"name":"Mozzarella","kcal":280,"protein":18.0,"carbs":2.0,"fat":22.0},
+  {"name":"Jogurtti maustamaton 1,5%","kcal":62,"protein":3.8,"carbs":5.3,"fat":1.5},
+  {"name":"Skyr 0%","kcal":63,"protein":11.0,"carbs":4.0,"fat":0.2},
+  // Makkarat ja liha
+  {"name":"Nakki / lenkkimakkara","kcal":270,"protein":11.0,"carbs":2.5,"fat":24.0},
+  {"name":"Kinkku (keitetty, siivutettu)","kcal":115,"protein":17.5,"carbs":1.0,"fat":4.5},
+  {"name":"Salami / pepperoni","kcal":430,"protein":20.0,"carbs":1.5,"fat":38.0},
+  {"name":"Pekoni (paistettu)","kcal":533,"protein":35.0,"carbs":0,"fat":43.0},
+  // Kastikkeet ja mausteet
+  {"name":"Ketsuppi","kcal":110,"protein":1.8,"carbs":26.0,"fat":0.1},
+  {"name":"Sinappi","kcal":66,"protein":4.0,"carbs":6.5,"fat":2.5},
+  {"name":"Majoneesi","kcal":680,"protein":1.2,"carbs":2.0,"fat":75.0},
+  {"name":"Kevytmajoneesi","kcal":300,"protein":1.5,"carbs":8.0,"fat":28.0},
+  {"name":"Soijakastike","kcal":60,"protein":8.0,"carbs":6.0,"fat":0.1},
+  // Pähkinät ja siemenet
+  {"name":"Mantelit","kcal":579,"protein":21.0,"carbs":22.0,"fat":50.0},
+  {"name":"Cashewpähkinät","kcal":553,"protein":18.0,"carbs":30.0,"fat":44.0},
+  {"name":"Maapähkinät","kcal":567,"protein":26.0,"carbs":16.0,"fat":49.0},
+  {"name":"Maapähkinävoi","kcal":588,"protein":25.0,"carbs":20.0,"fat":50.0},
+  {"name":"Auringonkukansiemenet","kcal":584,"protein":21.0,"carbs":20.0,"fat":51.0},
+  {"name":"Chia-siemenet","kcal":486,"protein":17.0,"carbs":42.0,"fat":31.0},
+  // Kasviproteiinit
+  {"name":"Tofu (luonnonjuusto)","kcal":76,"protein":8.0,"carbs":1.9,"fat":4.0},
+  {"name":"Tempeh","kcal":193,"protein":19.0,"carbs":9.0,"fat":11.0},
+  {"name":"Linssit (keitetty)","kcal":116,"protein":9.0,"carbs":20.0,"fat":0.4},
+  {"name":"Kikherneet (keitetty)","kcal":164,"protein":8.9,"carbs":27.0,"fat":2.6},
+  {"name":"Mustapapu (keitetty)","kcal":132,"protein":8.9,"carbs":24.0,"fat":0.5},
+  // Kasvikset lisää
+  {"name":"Sipuli","kcal":40,"protein":1.1,"carbs":9.3,"fat":0.1},
+  {"name":"Valkosipuli","kcal":149,"protein":6.4,"carbs":33.0,"fat":0.5},
+  {"name":"Jäävuorisalaatti","kcal":14,"protein":0.9,"carbs":2.9,"fat":0.1},
+  {"name":"Punajuuri","kcal":43,"protein":1.6,"carbs":10.0,"fat":0.2},
+  {"name":"Maissi (säilyke)","kcal":86,"protein":3.3,"carbs":19.0,"fat":1.2},
+  {"name":"Herneet (pakastettu)","kcal":81,"protein":5.4,"carbs":14.0,"fat":0.4},
+  {"name":"Kukkakaali","kcal":25,"protein":1.9,"carbs":5.0,"fat":0.3},
+  {"name":"Kesäkurpitsa","kcal":17,"protein":1.2,"carbs":3.1,"fat":0.3},
+  // Hedelmät lisää
+  {"name":"Appelsiini","kcal":47,"protein":0.9,"carbs":12.0,"fat":0.1},
+  {"name":"Mansikka","kcal":32,"protein":0.7,"carbs":7.7,"fat":0.3},
+  {"name":"Vadelma","kcal":52,"protein":1.2,"carbs":12.0,"fat":0.7},
+  {"name":"Mango","kcal":60,"protein":0.8,"carbs":15.0,"fat":0.4},
+  {"name":"Vesimeloni","kcal":30,"protein":0.6,"carbs":7.6,"fat":0.2},
+  // Leivonta ja muut
+  {"name":"Kananmuna L (iso, ~63g)","kcal":155,"protein":13.0,"carbs":1.0,"fat":11.0},
+  {"name":"Maizena / perunajauhot","kcal":343,"protein":0.3,"carbs":83.0,"fat":0.1},
+  {"name":"Hunaja","kcal":304,"protein":0.3,"carbs":82.0,"fat":0},
+  {"name":"Sokeri","kcal":400,"protein":0,"carbs":100.0,"fat":0},
+  {"name":"Kaura-/soijamaito","kcal":42,"protein":1.5,"carbs":6.5,"fat":1.5},
+  // Kana- ja lihavalmisteet (tyypilliset hakusanat)
+  {"name":"Kanan paistileike","kcal":155,"protein":18.0,"carbs":10.0,"fat":4.5},
+  {"name":"Kanan wokkisuikaleet","kcal":120,"protein":22.0,"carbs":1.5,"fat":2.5},
+  {"name":"Kanan nuggetit","kcal":230,"protein":14.0,"carbs":17.0,"fat":11.0},
+  {"name":"Kanan leike (paneeroitu)","kcal":215,"protein":16.0,"carbs":15.0,"fat":9.0},
+  {"name":"Broilerin koipi-reisi (luuton)","kcal":175,"protein":19.0,"carbs":0,"fat":11.0},
+  {"name":"Broilerin jauheliha","kcal":145,"protein":20.0,"carbs":0,"fat":7.0},
+  {"name":"Naudan paistileike","kcal":185,"protein":22.0,"carbs":5.0,"fat":8.0},
+  {"name":"Porsaan paistisuikaleet","kcal":160,"protein":20.0,"carbs":0,"fat":9.0},
+  // Kalatuotteet
+  {"name":"Lohifilee (savustettu)","kcal":200,"protein":22.0,"carbs":0,"fat":13.0},
+  {"name":"Kirjolohifilee","kcal":155,"protein":21.0,"carbs":0,"fat":8.0},
+  {"name":"Silakka (paistettu)","kcal":165,"protein":18.0,"carbs":0,"fat":10.0},
+  {"name":"Kalafile pakastettu (valkoinen)","kcal":90,"protein":17.5,"carbs":1.0,"fat":1.5},
+  {"name":"Silli (suolattu, huuhdeltu)","kcal":190,"protein":18.0,"carbs":0,"fat":13.0},
+  // Valmisruuat ja puolivalmisteet
+  {"name":"Lihapullat (Atria/HK tyyppi)","kcal":210,"protein":13.0,"carbs":8.0,"fat":14.0},
+  {"name":"Jauhelihakastike","kcal":130,"protein":9.0,"carbs":6.0,"fat":8.0},
+  {"name":"Kaalilaatikko","kcal":90,"protein":5.5,"carbs":9.0,"fat":3.5},
+  {"name":"Makaronilaatikko","kcal":125,"protein":7.0,"carbs":13.0,"fat":5.0},
+  {"name":"Puuro (kaurapuuro, keitetty)","kcal":68,"protein":2.5,"carbs":12.0,"fat":1.3},
+  {"name":"Mysli (kuiva)","kcal":370,"protein":9.0,"carbs":63.0,"fat":8.0},
+  // Leivät ja viljatuotteet
+  {"name":"Ruisleipä","kcal":220,"protein":7.0,"carbs":46.0,"fat":1.5},
+  {"name":"Näkkileipä (ruis)","kcal":340,"protein":9.0,"carbs":70.0,"fat":2.0},
+  {"name":"Sämpylä (vehnä)","kcal":280,"protein":9.0,"carbs":56.0,"fat":2.5},
+  {"name":"Kauraleipä","kcal":235,"protein":8.5,"carbs":44.0,"fat":3.0},
+  {"name":"Couscous (keitetty)","kcal":112,"protein":3.8,"carbs":23.0,"fat":0.2},
+  {"name":"Bulgur (keitetty)","kcal":83,"protein":3.1,"carbs":18.0,"fat":0.2},
+  {"name":"Quinoa (keitetty)","kcal":120,"protein":4.4,"carbs":22.0,"fat":1.9},
+  // Juomat
+  {"name":"Appelsiinimehu (100%)","kcal":44,"protein":0.7,"carbs":10.0,"fat":0.1},
+  {"name":"Proteiinijuoma (valmis, tyyppi)","kcal":50,"protein":9.0,"carbs":3.0,"fat":0.5},
+  {"name":"Urheilujuoma (iso)","kcal":26,"protein":0,"carbs":6.5,"fat":0},
+  // Leikkeleet ja makkarat lisää
+  {"name":"Meetvursti","kcal":450,"protein":22.0,"carbs":1.0,"fat":40.0},
+  {"name":"Kalkkunaleikkele","kcal":95,"protein":19.0,"carbs":0.5,"fat":2.0},
+  {"name":"Broilerin leikkele","kcal":100,"protein":18.0,"carbs":1.5,"fat":2.5},
+  {"name":"Lauantaimakkara","kcal":280,"protein":12.0,"carbs":5.0,"fat":24.0},
+  // Maitotuotteet lisää
+  {"name":"Piimä","kcal":38,"protein":3.3,"carbs":4.7,"fat":0.9},
+  {"name":"Kefir","kcal":52,"protein":3.5,"carbs":5.5,"fat":1.5},
+  {"name":"Tuorejuusto (esim. Philadelphia)","kcal":250,"protein":5.5,"carbs":3.5,"fat":24.0},
+  {"name":"Parmesaani","kcal":431,"protein":38.0,"carbs":3.2,"fat":29.0},
+  // Kasvikset lisää
+  {"name":"Lehtikaali","kcal":49,"protein":4.3,"carbs":9.0,"fat":0.9},
+  {"name":"Ruusukaali","kcal":43,"protein":3.4,"carbs":9.0,"fat":0.3},
+  {"name":"Selleri (varsi)","kcal":16,"protein":0.7,"carbs":3.0,"fat":0.2},
+  {"name":"Parsa (vihreä)","kcal":20,"protein":2.2,"carbs":3.7,"fat":0.1},
+  {"name":"Fetasalaatti (rakuuna)","kcal":264,"protein":14.0,"carbs":1.0,"fat":22.0}
 ];
 
 // ═══════════════════════════════════════════
@@ -1403,13 +1397,14 @@ async function onboardingNext(){
 // ═══════════════════════════════════════════
 function showMainApp(){
   document.getElementById('onboarding').style.display='none';
+  document.querySelector('.tab-bar').style.display='flex';
   const app=document.getElementById('app');
   app.style.display='flex';app.style.flexDirection='column';
   if(!state.currentDate) state.currentDate=todayISO();
   if(!state.viewDate) state.viewDate=todayISO();
   renderMacroStrip();renderMealPlan();renderDiaryTab();renderWeightTab();renderSettingsTab();
   switchTab('program');
-  initFiProductCache(); // lataa suomalaiset tuotteet taustalla
+  loadFiProductsCache(); // Lataa FI-tuotteet taustalla
 }
 
 function switchTab(tab){
@@ -1443,13 +1438,7 @@ function renderMacroStrip(){
   // Use diary data for today if available
   const today=todayISO();
   const diaryToday=state.diary[today];
-  let eaten;
-  if(diaryToday && (Object.keys(diaryToday.eaten||{}).length>0 || (diaryToday.freeEntries||[]).length>0)){
-    eaten=calcDiaryEaten(today);
-  } else {
-    // No diary entries = show 0/target to encourage logging
-    eaten={kcal:0,protein:0,carbs:0,fat:0};
-  }
+  const eaten=diaryToday?calcDiaryEaten(today):{kcal:0,protein:0,carbs:0,fat:0};
 
   const pProt=Math.min(100,Math.round(eaten.protein/tProt*100));
   const pCarbs=Math.min(100,Math.round(eaten.carbs/tCarbs*100));
@@ -1499,7 +1488,7 @@ async function toggleFavorite(name,opt){
   await save('favorites',state.favorites);
   // Päivitä nappi heti jos modaali auki
   const btn=document.getElementById('fav-toggle-btn');
-  if(btn){btn.textContent=isFavorite(name)?'⭐ Suosikki':'☆ Lisää suosikkeihin';btn.className='rm-fav-btn'+(isFavorite(name)?' active':'');}
+  if(btn){btn.textContent=isFavorite(name)?'❤️ Suosikki':'🤍 Lisää suosikkeihin';btn.className='rm-fav-btn'+(isFavorite(name)?' active':'');}
   renderMealPlan();
 }
 
@@ -1580,17 +1569,20 @@ function renderMealPlan(){
     // Piilota treenivälipala lepopäivänä tai boost-moodissa
     if(meal.isTrainingSnack && (!state.trainingDay || trainingMode==='boost')) return '';
     const isPW=meal.isTrainingSnack && state.trainingDay;
-    // Järjestä suosikit ensin (pysytään originaalissa indeksissä state.selectedOptions varten)
+    const sv=mealCollapsed[mi]||0; // 0=full, 1=partial, 2=collapsed
+    // Järjestä suosikit ensin
     const sortedOpts=meal.options.map((o,oi)=>({o,oi})).sort((a,b)=>(isFavorite(b.o.name)?1:0)-(isFavorite(a.o.name)?1:0));
+    const collapseIcon=sv===0?'▲':sv===1?'▾':'▼';
     return `
       <div class="meal-card ${isPW?'preworkout':''} slide-up" style="animation-delay:${mi*60}ms">
         <div class="mc-header">
           <div class="mc-meal-name">🕐 ${meal.slot.toUpperCase()}</div>
           ${isPW?'<div class="mc-pw-badge">⚡ PRE-WORKOUT</div>':''}
+          <button class="mc-collapse-btn" onclick="toggleMealCollapse(${mi},event)">${collapseIcon}</button>
         </div>
-        <div class="mc-options">
-          ${sortedOpts.map(({o,oi})=>renderMealOption(o,mi,oi)).join('')}
-          <div class="mc-btns">
+        <div class="mc-options${sv===2?' mc-collapsed':''}" id="mc-opts-${mi}">
+          ${sortedOpts.map(({o,oi})=>renderMealOption(o,mi,oi,sv===1&&state.selectedOptions[mi]!==oi&&!isFavorite(o.name))).join('')}
+          <div class="mc-btns"${sv===1?' style="display:none"':''}>
             <button class="mc-ai-btn" id="ai-btn-${mi}" onclick="showAiPreference(${mi})">${isOffline?'✨ AI idea (Offline)':'✨ AI idea'}</button>
             <button class="mc-custom-btn" onclick="openCustomMealModal(${mi})">＋ Oma ateria</button>
           </div>
@@ -1598,6 +1590,64 @@ function renderMealPlan(){
         </div>
       </div>`;
   }).join('');
+}
+
+function _slideUp(el,done){
+  el.style.overflow='hidden';
+  el.style.transition='none';
+  el.style.height=el.scrollHeight+'px';
+  el.style.opacity='1';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    el.style.transition='height .2s cubic-bezier(.4,0,.2,1),opacity .18s ease';
+    el.style.height='0';
+    el.style.opacity='0';
+    setTimeout(()=>{el.style.transition=el.style.overflow=el.style.height=el.style.opacity='';if(done)done();},210);
+  }));
+}
+function _slideDown(el,done){
+  el.style.overflow='hidden';
+  el.style.height='0';
+  el.style.opacity='0';
+  const target=el.scrollHeight+'px';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    el.style.transition='height .22s cubic-bezier(.4,0,.2,1),opacity .2s ease';
+    el.style.height=target;
+    el.style.opacity='1';
+    setTimeout(()=>{el.style.transition=el.style.overflow=el.style.height=el.style.opacity='';if(done)done();},230);
+  }));
+}
+
+function toggleMealCollapse(mi,e){
+  e.stopPropagation();
+  const current=mealCollapsed[mi]||0;
+  const opts=document.getElementById('mc-opts-'+mi);
+  const btn=e.currentTarget;
+  if(!opts) return;
+
+  if(current===0){
+    // 0→1: piilota ei-valitut/ei-suosikit + mc-btns
+    mealCollapsed[mi]=1;
+    opts.querySelectorAll('.meal-option').forEach(el=>{
+      if(!el.dataset.sel&&!el.dataset.fav) el.classList.add('mc-hidden');
+    });
+    const mcBtns=opts.querySelector('.mc-btns');
+    if(mcBtns) mcBtns.style.display='none';
+    btn.textContent='▾';
+  } else if(current===1){
+    // 1→2: palauta kaikki, sitten animoi kiinni
+    mealCollapsed[mi]=2;
+    opts.querySelectorAll('.meal-option').forEach(el=>el.classList.remove('mc-hidden'));
+    const mcBtns=opts.querySelector('.mc-btns');
+    if(mcBtns) mcBtns.style.display='';
+    btn.textContent='▼';
+    _slideUp(opts,()=>opts.classList.add('mc-collapsed'));
+  } else {
+    // 2→0: animoi auki
+    mealCollapsed[mi]=0;
+    opts.classList.remove('mc-collapsed');
+    btn.textContent='▲';
+    _slideDown(opts);
+  }
 }
 
 // Day navigation
@@ -1623,7 +1673,7 @@ function navDay(dir){
   if(label) label.textContent=getViewDateLabel();
 }
 
-function renderMealOption(opt,mi,oi){
+function renderMealOption(opt,mi,oi,hidden=false){
   const selected=state.selectedOptions[mi]===oi;
   const isNew=opt._new;
   const isCustom=opt._custom;
@@ -1632,9 +1682,11 @@ function renderMealOption(opt,mi,oi){
   const prot=Math.round(opt.protein||0);
   const carbs=Math.round(opt.carbs||0);
   const fat=Math.round(opt.fat||0);
-  const badge=isNew?'<span class="new-badge">AI</span>':isCustom?'<span class="custom-badge">OMA</span>':fav?'<span class="new-badge" style="background:#f5c518;color:#111;">⭐</span>':'';
+  const typeBadge=isNew?'<span class="new-badge">AI</span>':isCustom?'<span class="custom-badge">OMA</span>':'';
+  const favBadge=fav?'<span class="fav-badge">❤️</span>':'';
+  const badge=typeBadge+favBadge;
   return `
-    <div class="meal-option ${selected?'selected':''} ${(isNew||isCustom)?'pop-in':''}" onclick="openRecipe(${mi},${oi})">
+    <div class="meal-option ${selected?'selected':''} ${(isNew||isCustom)?'pop-in':''} ${hidden?'mc-hidden':''}" data-sel="${selected?'1':''}" data-fav="${fav?'1':''}" onclick="openRecipe(${mi},${oi})">
       <div class="mo-emoji">${sanitize(opt.emoji||'🍽️')}</div>
       <div class="mo-info">
         <div class="mo-name">${sanitize(opt.name)}${badge}</div>
@@ -1687,7 +1739,8 @@ function openRecipe(mi,oi){
       <div class="rm-section-title">Valmistusohje</div>
       <div class="rm-instructions" style="white-space:pre-line;">${sanitizeNL(opt.instructions||'Ei ohjetta.')}</div>
       <button class="rm-select-btn" onclick="selectMealOption(${mi},${oi})">${selected?'✓ Valittu':'Valitse tämä ateria'}</button>
-      <button id="fav-toggle-btn" class="rm-fav-btn${isFavorite(opt.name)?' active':''}" onclick="toggleFavorite('${sanitize(opt.name).replace(/'/g,"\\'")}',state.mealPlan[${mi}].options[${oi}])">${isFavorite(opt.name)?'⭐ Suosikki':'☆ Lisää suosikkeihin'}</button>
+      <button id="fav-toggle-btn" class="rm-fav-btn${isFavorite(opt.name)?' active':''}" onclick="toggleFavorite('${sanitize(opt.name).replace(/'/g,"\\'")}',state.mealPlan[${mi}].options[${oi}])">${isFavorite(opt.name)?'❤️ Suosikki':'🤍 Lisää suosikkeihin'}</button>
+      <button class="rm-edit-btn" onclick="closeRecipeModal();editCustomMeal(${mi},${oi})">✏️ Muokkaa reseptiä</button>
       ${canDelete?`<button class="rm-delete-btn" onclick="removeMealOption(${mi},${oi})">🗑 Poista vaihtoehto</button>`:''}
     </div>`;
 
@@ -1723,24 +1776,86 @@ async function removeMealOption(mi,oi){
 function showAiPreference(mi){
   const container=document.getElementById('ai-pref-'+mi);
   if(!container) return;
-  // Toggle off if already open
   if(container.innerHTML){container.innerHTML='';return;}
+
+  const meal=state.mealPlan[mi];
+  const defKcal=Math.round(meal.targetKcal);
+  const defProt=Math.round(meal.targetProtein);
+  const defFat=Math.round((meal.targetKcal*0.25)/9);
+  const defCarbs=Math.round((meal.targetKcal-defProt*4-defFat*9)/4);
+  if(!aiPrefState[mi]) aiPrefState[mi]={wish:'',want:[],avoid:[],kcal:defKcal,protein:defProt,carbs:defCarbs,fat:defFat};
+  const p=aiPrefState[mi];
+
   container.innerHTML=`
-    <div class="ai-pref-form">
-      <input id="ai-pref-input-${mi}" type="text" placeholder="Mitä haluaisit syödä?">
-      <button class="aipf-gen" onclick="requestAiIdea(${mi},document.getElementById('ai-pref-input-${mi}').value)">Generoi ✨</button>
-      <button class="aipf-skip" onclick="requestAiIdea(${mi},'')">Ohita</button>
+    <div class="ai-pref-panel slide-up">
+      <div class="app-section">
+        <div class="app-label">💬 Vapaa toive <span class="app-opt">valinnainen</span></div>
+        <input class="app-input" id="app-wish-${mi}" placeholder="esim. jotain kevyttä ja nopeaa..." value="${sanitize(p.wish)}" oninput="aiPrefState[${mi}].wish=this.value">
+      </div>
+      <div class="app-section">
+        <div class="app-label">🥦 Toivotut raaka-aineet <span class="app-opt">valinnainen</span></div>
+        <div class="app-chips" id="app-want-chips-${mi}"></div>
+        <div class="app-chip-row">
+          <input class="app-chip-input" id="app-want-input-${mi}" placeholder="esim. broileri" onkeydown="aiChipKey(event,${mi},'want')">
+          <button class="app-chip-add" onclick="aiAddChip(${mi},'want')">＋</button>
+        </div>
+      </div>
+      <div class="app-section">
+        <div class="app-label">🚫 En halua <span class="app-opt">valinnainen</span></div>
+        <div class="app-chips" id="app-avoid-chips-${mi}"></div>
+        <div class="app-chip-row">
+          <input class="app-chip-input" id="app-avoid-input-${mi}" placeholder="esim. kananmuna" onkeydown="aiChipKey(event,${mi},'avoid')">
+          <button class="app-chip-add" onclick="aiAddChip(${mi},'avoid')">＋</button>
+        </div>
+      </div>
+      <div class="app-section">
+        <div class="app-label">🎯 Makrotavoite <span class="app-opt">valinnainen – muokkaa tarvittaessa</span></div>
+        <div class="app-macro-row">
+          <div class="app-macro-field"><div class="app-macro-unit">kcal</div><input type="number" class="app-macro-input" value="${p.kcal}" oninput="aiPrefState[${mi}].kcal=+this.value||${defKcal}"></div>
+          <div class="app-macro-field"><div class="app-macro-unit">P g</div><input type="number" class="app-macro-input" value="${p.protein}" oninput="aiPrefState[${mi}].protein=+this.value||${defProt}"></div>
+          <div class="app-macro-field"><div class="app-macro-unit">HH g</div><input type="number" class="app-macro-input" value="${p.carbs}" oninput="aiPrefState[${mi}].carbs=+this.value||${defCarbs}"></div>
+          <div class="app-macro-field"><div class="app-macro-unit">R g</div><input type="number" class="app-macro-input" value="${p.fat}" oninput="aiPrefState[${mi}].fat=+this.value||${defFat}"></div>
+        </div>
+      </div>
+      <button class="app-generate-btn" onclick="requestAiIdea(${mi})">✨ Generoi ateriaidea</button>
     </div>`;
+  renderAiChips(mi,'want');
+  renderAiChips(mi,'avoid');
 }
 
-async function requestAiIdea(mi,preference){
+function renderAiChips(mi,type){
+  const el=document.getElementById('app-'+type+'-chips-'+mi);
+  if(!el||!aiPrefState[mi]) return;
+  el.innerHTML=aiPrefState[mi][type].map((v,i)=>
+    `<span class="app-chip">${sanitize(v)}<button onclick="aiRemoveChip(${mi},'${type}',${i})">×</button></span>`
+  ).join('');
+}
+function aiAddChip(mi,type){
+  const inp=document.getElementById('app-'+type+'-input-'+mi);
+  if(!inp||!aiPrefState[mi]) return;
+  const v=inp.value.trim();
+  if(!v) return;
+  aiPrefState[mi][type].push(v);
+  inp.value='';
+  renderAiChips(mi,type);
+}
+function aiRemoveChip(mi,type,i){
+  if(!aiPrefState[mi]) return;
+  aiPrefState[mi][type].splice(i,1);
+  renderAiChips(mi,type);
+}
+function aiChipKey(e,mi,type){
+  if(e.key==='Enter'||e.key===','){e.preventDefault();aiAddChip(mi,type);}
+}
+
+async function requestAiIdea(mi){
   const meal=state.mealPlan[mi];
   const profile=state.profile;
   const existing=meal.options.map(o=>o.name).join(', ');
   const btn=document.getElementById('ai-btn-'+mi);
   if(!btn)return;
 
-  // Close preference form
+  // Close preference panel
   const prefContainer=document.getElementById('ai-pref-'+mi);
   if(prefContainer) prefContainer.innerHTML='';
 
@@ -1748,12 +1863,15 @@ async function requestAiIdea(mi,preference){
   btn.innerHTML='<span class="spinner"></span> Generoidaan...';
   btn.classList.add('loading');
 
-  const tKcal  = Math.round(meal.targetKcal);
-  const tProt  = Math.round(meal.targetProtein);
-  const tFat   = Math.round((meal.targetKcal * 0.25) / 9);
-  const tCarbs = Math.round((meal.targetKcal - tProt*4 - tFat*9) / 4);
+  const p=aiPrefState[mi]||{};
+  const tKcal  = p.kcal  || Math.round(meal.targetKcal);
+  const tProt  = p.protein|| Math.round(meal.targetProtein);
+  const tFat   = p.fat   || Math.round((meal.targetKcal*0.25)/9);
+  const tCarbs = p.carbs || Math.round((meal.targetKcal-tProt*4-tFat*9)/4);
 
-  const prefText=preference?`\nKäyttäjän toive: ${preference}`:'';
+  const wishText  = p.wish?.trim()    ? `\nKäyttäjän toive: ${p.wish}`                     : '';
+  const wantText  = p.want?.length    ? `\nToivotut raaka-aineet: ${p.want.join(', ')}`     : '';
+  const avoidText = p.avoid?.length   ? `\nVältä ehdottomasti: ${p.avoid.join(', ')}`       : '';
 
   const systemPrompt=`Olet suomalainen ravintoneuvoja. Generoi YKSI uusi ateriavaihtoehto JSON-muodossa.
 Vastaa VAIN JSON-objektilla, ei mitään muuta. Ei Markdown-backtickejä.
@@ -1767,7 +1885,7 @@ VAADITUT MAKROT (täsmälliset arvot):
   - Hiilihydraatit: ${tCarbs} g
   - Rasva: ${tFat} g
 Ruokarajoitteet: ${profile.restrictions?.length?profile.restrictions.join(', '):'Ei rajoitteita'}
-Aterian tulee olla täysin erilainen kuin: ${existing}${prefText}
+Aterian tulee olla täysin erilainen kuin: ${existing}${wishText}${wantText}${avoidText}
 Muuta ainesosien määriä niin että yllä olevat makrot toteutuvat.`;
 
   // Tarkista AI-ympäristö ennen kutsua
@@ -1848,17 +1966,118 @@ function generateLocalIdea(meal){
 // CUSTOM MEAL MODAL
 // ═══════════════════════════════════════════
 let customMealTarget=null;
+let customMealEditOi=null;
 let customIngredients=[];  // [{dbIdx, amount, name, per100:{kcal,protein,carbs,fat}}]
+let mealCollapsed={};
+let aiPrefState={}; // {[mi]:{wish,want:[],avoid:[],kcal,protein,carbs,fat}}
 let customFreeIngredients=[{a:'',n:''}]; // vapaat ainekset
 let customEmoji='🍽️';
 let cmSearchTab='local'; // 'local' tai 'api'
 let cmApiTimeout=null;
-const cmSearchCache=new Map(); // välimuisti API-hauille
+const cmSearchCache=new Map(); // välimuisti live API-hauille
+
+// ── FI-tuotevälimuisti (OFF API, 7pv TTL) ──
+const FI_CACHE_KEY='ravinto_fi_products_v2';
+const FI_CACHE_TTL=7*24*60*60*1000;
+let fiProductsCache=null;
+
+function normalizeOFFProduct(p){
+  const n=p.nutriments||{};
+  const kcal=Math.round(n['energy-kcal_100g']||(n['energy_100g']||0)/4.184||0);
+  const protein=Math.round((n.proteins_100g||0)*10)/10;
+  const carbs=Math.round((n.carbohydrates_100g||0)*10)/10;
+  const fat=Math.round((n.fat_100g||0)*10)/10;
+  const name=(p.product_name_fi||p.product_name||'').trim();
+  if(!name||(!kcal&&!protein)) return null;
+  return {name,brand:(p.brands||'').split(',')[0].trim(),kcal,protein,carbs,fat};
+}
+
+async function loadFiProductsCache(){
+  try{
+    const raw=localStorage.getItem(FI_CACHE_KEY);
+    if(raw){
+      const {ts,products}=JSON.parse(raw);
+      if(Date.now()-ts<FI_CACHE_TTL&&products.length>0){fiProductsCache=products;return;}
+    }
+  }catch(e){}
+  try{
+    const pages=await Promise.all([1,2,3,4,5].map(pg=>
+      fetch(`https://world.openfoodfacts.org/cgi/search.pl?action=process&lc=fi&cc=fi&json=1&page_size=100&page=${pg}&fields=product_name,product_name_fi,brands,nutriments`)
+        .then(r=>r.json()).catch(()=>({products:[]}))
+    ));
+    const products=[];const seen=new Set();
+    for(const page of pages){
+      for(const p of (page.products||[])){
+        const norm=normalizeOFFProduct(p);
+        if(!norm)continue;
+        const key=norm.name.toLowerCase();
+        if(seen.has(key))continue;
+        seen.add(key);products.push(norm);
+      }
+    }
+    if(products.length>0){
+      fiProductsCache=products;
+      try{localStorage.setItem(FI_CACHE_KEY,JSON.stringify({ts:Date.now(),products}));}catch(e){}
+    }
+  }catch(e){}
+}
+
+function searchLocalFiProducts(query){
+  if(!fiProductsCache||!query||query.length<2) return [];
+  const q=query.toLowerCase();
+  const results=[];
+  for(const p of fiProductsCache){
+    if((p.name+' '+(p.brand||'')).toLowerCase().includes(q)){
+      results.push(p);
+      if(results.length>=25) break;
+    }
+  }
+  return results;
+}
+
+async function searchOFFLive(query){
+  const key='live:'+query;
+  if(cmSearchCache.has(key)) return cmSearchCache.get(key);
+  try{
+    // v1 endpoint: tunnettu toimivaksi suomalaisille hakutermeille
+    const url=`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&action=process&json=1&page_size=20&fields=product_name,product_name_fi,brands,nutriments`;
+    const r=await fetch(url);
+    const d=await r.json();
+    const products=(d.products||[]).map(normalizeOFFProduct).filter(p=>p&&p.name&&p.kcal>0);
+    if(products.length>0) cmSearchCache.set(key,products); // tallenna vain onnistuneet
+    return products;
+  }catch(e){return [];}
+}
 
 const EMOJI_OPTIONS=['🍽️','🥗','🍚','🍝','🥩','🐟','🥯','🥞','🍲','🥣','🧀','🥚','🍗','🐠','🌿','🍓','🥛','🍮','🌮','🍜','🥙','🍕','🥘','🍱'];
 
+function editCustomMeal(mi,oi){
+  const opt=state.mealPlan[mi].options[oi];
+  customMealTarget=mi;
+  customMealEditOi=oi;
+  customEmoji=opt.emoji||'🍽️';
+  customIngredients=(opt._ingData||[]).map(i=>({...i}));
+  // Built-in meals: load ingredients as free-text rows
+  if(!opt._ingData && opt.ingredients && opt.ingredients.length){
+    customFreeIngredients=opt.ingredients.map(i=>({a:i.a||'',n:i.n||''}));
+  } else {
+    customFreeIngredients=[{a:'',n:''}];
+  }
+  const modal=document.getElementById('custom-modal');
+  const meal=state.mealPlan[mi];
+  renderCustomModal(meal);
+  modal.style.display='flex';
+  modal.classList.add('fade-in');
+  setTimeout(()=>{
+    const n=document.getElementById('cm-name'); if(n) n.value=opt.name||'';
+    const t=document.getElementById('cm-time'); if(t) t.value=opt.time||'';
+    const ins=document.getElementById('cm-instructions'); if(ins) ins.value=opt.instructions||'';
+  },0);
+}
+
 function openCustomMealModal(mi){
   customMealTarget=mi;
+  customMealEditOi=null;
   customIngredients=[];
   customFreeIngredients=[{a:'',n:''}];
   customEmoji='🍽️';
@@ -1889,9 +2108,15 @@ function renderCustomModal(meal){
     const r=ing.amount/100;
     const iKcal=Math.round(ing.per100.kcal*r);
     const iProt=Math.round(ing.per100.protein*r);
+    const kplW=ing.gramPerKpl||getKplWeight(ing.name);
+    const showKpl=ing.kplMode&&kplW;
+    const dispVal=showKpl?Math.max(1,Math.round(ing.amount/kplW)):ing.amount;
+    const dispUnit=showKpl?'kpl':'g';
+    const canToggle=!!kplW;
+    const step=showKpl?1:5;
     return `<div class="cm-ing-row">
-      <input type="number" class="cm-ing-amount" value="${ing.amount}" min="1" step="5" oninput="updateIngAmount(${i},this.value)">
-      <span class="cm-ing-unit">g</span>
+      <input type="number" class="cm-ing-amount" value="${dispVal}" min="1" step="${step}" oninput="updateIngAmount(${i},this.value)">
+      <span class="cm-ing-unit${canToggle?' togglable':''}" onclick="${canToggle?`toggleIngUnit(${i})`:''}" title="${canToggle?'Klikkaa vaihtaaksesi g/kpl':''}">${dispUnit}</span>
       <span class="cm-ing-name">${sanitize(ing.name)}</span>
       <span class="cm-ing-macros">${iKcal}kcal · ${iProt}g P</span>
       <button class="cm-remove-ing" onclick="removeIngFromList(${i})">✕</button>
@@ -1906,9 +2131,15 @@ function renderCustomModal(meal){
     </div>
   `).join('');
 
+  const isEdit=customMealEditOi!==null;
   content.innerHTML=`
-    <div class="cm-title">Lisää oma ateria 🍴</div>
+    <div class="cm-title">${isEdit?'Muokkaa ateriaa ✏️':'Lisää oma ateria 🍴'}</div>
     <div class="cm-sub">${meal?meal.slot+' · Tavoite ~'+Math.round(meal.targetKcal)+' kcal':''}</div>
+
+    ${!isEdit?`<div class="cm-field">
+      <button class="cm-img-btn" onclick="triggerImageImport()">📸 Tuo resepti kuvasta (AI)</button>
+      <div id="cm-img-status"></div>
+    </div>`:''}
 
     <div class="cm-field">
       <label class="cm-label">Aterian nimi *</label>
@@ -1976,6 +2207,205 @@ function setCmSearchTab(tab){
   renderCustomModal(meal);
 }
 
+// ═══════════════════════════════════════════
+// KUVARESEPTI-TUONTI (AI vision)
+// ═══════════════════════════════════════════
+function triggerImageImport(){
+  if(!_hasClaudeStorage&&!state.profile?.apiKey){
+    showToast('Lisää Anthropic API-avain Asetuksissa ensin','error');
+    return;
+  }
+  document.getElementById('recipe-img-input').click();
+}
+
+async function handleRecipeImage(input){
+  const file=input.files[0];
+  if(!file) return;
+  input.value='';
+  const status=document.getElementById('cm-img-status');
+  if(!status) return;
+
+  const reader=new FileReader();
+  reader.onload=async(e)=>{
+    const dataUrl=e.target.result;
+    const base64=dataUrl.split(',')[1];
+    const mediaType=file.type||'image/jpeg';
+
+    status.innerHTML=`<img src="${dataUrl}" class="cm-img-preview"><div class="cm-img-loading">🔍 AI analysoi reseptiä...</div>`;
+
+    try{
+      const resp=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:getAnthropicHeaders(),
+        body:JSON.stringify({
+          model:'claude-opus-4-5',
+          max_tokens:900,
+          messages:[{role:'user',content:[
+            {type:'image',source:{type:'base64',media_type:mediaType,data:base64}},
+            {type:'text',text:`Analysoi tämä reseptikuva. Tunnista jokainen ainesosa ja sen määrä. Kasvikset, hedelmät ja munat ilmoita kappaleina (unit:"kpl", lisää weight_per_piece grammoina). Muut ainesosat grammoina (unit:"g"). Laske makrot JOKAISELLE ainesosalle erikseen sen KOKONAISMÄÄRÄLLE (ei per 100g). Vastaa VAIN JSON-objektilla, ei muuta tekstiä:
+{"name":"Aterian nimi suomeksi","emoji":"🍽️","time":"20 min","instructions":"Lyhyt valmistusohje suomeksi","ingredients":[{"name":"Ainesosa suomeksi","amount":2,"unit":"kpl","weight_per_piece":120,"kcal":214,"protein":2.6,"carbs":55,"fat":0.6},{"name":"Broilerin rintafilee","amount":300,"unit":"g","kcal":330,"protein":69,"carbs":0,"fat":10}]}`}
+          ]}]
+        })
+      });
+      if(!resp.ok) throw new Error('API '+resp.status);
+      const d=await resp.json();
+      const text=(d.content||[]).map(c=>c.text||'').join('');
+      const m=text.match(/\{[\s\S]*\}/);
+      if(!m) throw new Error('Ei JSON-vastausta');
+      const recipe=JSON.parse(m[0]);
+      window._aiImportedRecipe=recipe;
+
+      // Näytä esikatselu annoskokovalitsimella
+      const ings=recipe.ingredients||[];
+      window._aiImportedDataUrl=dataUrl;
+      status.innerHTML=buildAIPreviewHtml(recipe,ings,dataUrl,1);
+    }catch(err){
+      console.error('Image import:',err);
+      status.innerHTML=`<div style="color:var(--red);font-size:13px;padding:6px 0;">Virhe: ${err.message}. Yritä uudelleen.</div>`;
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function buildAIPreviewHtml(recipe,ings,dataUrl,servings){
+  const d=Math.max(1,servings);
+  const ingListHtml=ings.map(i=>{
+    const isKpl=i.unit==='kpl';
+    const rawAmt=(i.amount||0)/d;
+    const dispAmt=isKpl?Math.max(1,Math.round(rawAmt)):Math.round(rawAmt);
+    const unit=isKpl?'kpl':'g';
+    const kcal=Math.round((i.kcal||0)/d);
+    const prot=Math.round((i.protein||0)/d*10)/10;
+    return `<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border2);">
+      <span>${sanitize(i.name)} <em style="color:var(--text3);">${dispAmt} ${unit}</em></span>
+      <span style="color:var(--text2);">${kcal} kcal · ${prot}g P</span>
+    </div>`;
+  }).join('');
+  const totKcal=Math.round(ings.reduce((s,i)=>s+(i.kcal||0),0)/d);
+  const totProt=Math.round(ings.reduce((s,i)=>s+(i.protein||0),0)/d*10)/10;
+  const totCarbs=Math.round(ings.reduce((s,i)=>s+(i.carbs||0),0)/d*10)/10;
+  const totFat=Math.round(ings.reduce((s,i)=>s+(i.fat||0),0)/d*10)/10;
+  const btnHtml=[1,2,3,4,5,6].map(n=>`<button onclick="updateAIServings(${n})" style="padding:6px 10px;border-radius:6px;border:1.5px solid ${n===d?'var(--accent)':'var(--border2)'};background:${n===d?'var(--accent)':'var(--bg4)'};color:${n===d?'#111':'var(--text)'};font-weight:700;font-size:13px;cursor:pointer;">${n}</button>`).join('');
+  return `<img src="${dataUrl}" class="cm-img-preview">
+    <div class="ai-recipe-card cm-img-result">
+      <div class="arc-emoji">${sanitize(recipe.emoji||'🍽️')}</div>
+      <div class="arc-title">${sanitize(recipe.name||'')}</div>
+      ${recipe.time?`<div style="font-size:12px;color:var(--text3);margin-bottom:6px;">⏱ ${sanitize(recipe.time)}</div>`:''}
+      <div style="margin:8px 0 6px;">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:6px;">Monelle hengelle resepti on suunniteltu?</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">${btnHtml}</div>
+      </div>
+      <div style="margin:8px 0;">${ingListHtml}</div>
+      <div class="arc-macros" style="margin-top:8px;">
+        <span>${totKcal} kcal</span>
+        <span style="color:var(--blue)">${totProt}g P</span>
+        <span style="color:var(--accent)">${totCarbs}g HH</span>
+        <span style="color:var(--green)">${totFat}g R</span>
+      </div>
+      <button class="dam-save-btn" onclick="fillFormFromAI(${d})" style="width:100%;margin-top:8px;">✅ Käytä (${d===1?'1 henkilö':d+' henkilöä'})</button>
+    </div>`;
+}
+
+function updateAIServings(n){
+  const recipe=window._aiImportedRecipe;
+  const dataUrl=window._aiImportedDataUrl;
+  if(!recipe) return;
+  const status=document.getElementById('cm-img-status');
+  if(status) status.innerHTML=buildAIPreviewHtml(recipe,recipe.ingredients||[],dataUrl,n);
+}
+
+function fillFormFromAI(servings){
+  const recipe=window._aiImportedRecipe;
+  if(!recipe) return;
+  const d=Math.max(1,servings||1);
+
+  customEmoji=recipe.emoji||'🍽️';
+
+  // Muunna jokainen ainesosa per-100g-arvoihin (jaettuna annoksilla)
+  const ings=recipe.ingredients||[];
+  if(ings.length>0){
+    customIngredients=ings.map(ing=>{
+      const isKpl=ing.unit==='kpl';
+      const kplW=ing.weight_per_piece||getKplWeight(ing.name)||null;
+      // Grammat per annos
+      let grams;
+      if(isKpl&&kplW){
+        const kplCount=Math.max(1,Math.round((ing.amount||1)/d));
+        grams=kplCount*kplW;
+      } else {
+        grams=Math.max(1,Math.round((ing.amount||100)/d));
+      }
+      const ingKcal=(ing.kcal||0)/d;
+      const ingProt=(ing.protein||0)/d;
+      const ingCarbs=(ing.carbs||0)/d;
+      const ingFat=(ing.fat||0)/d;
+      const factor=100/grams;
+      // Etsi vastaava tuote AINESOSA_DB:stä
+      const ingLower=(ing.name||'').toLowerCase();
+      let dbIdx=-1, dbPer100=null;
+      for(let di=0;di<AINESOSA_DB.length;di++){
+        const dbName=AINESOSA_DB[di].name.toLowerCase();
+        if(dbName.includes(ingLower)||ingLower.includes(dbName.split(' ')[0])){
+          dbIdx=di;
+          dbPer100={kcal:AINESOSA_DB[di].kcal,protein:AINESOSA_DB[di].protein,carbs:AINESOSA_DB[di].carbs,fat:AINESOSA_DB[di].fat};
+          break;
+        }
+      }
+      const per100=dbPer100||{
+        kcal:Math.round(ingKcal*factor),
+        protein:Math.round(ingProt*factor*10)/10,
+        carbs:Math.round(ingCarbs*factor*10)/10,
+        fat:Math.round(ingFat*factor*10)/10
+      };
+      return {
+        dbIdx,
+        amount:grams,
+        name:ing.name||'Ainesosa',
+        per100,
+        kplMode:!!(isKpl&&kplW),
+        gramPerKpl:kplW
+      };
+    });
+  } else {
+    customIngredients=[{
+      dbIdx:-1,amount:100,
+      name:(recipe.name||'AI-resepti')+' — per annos',
+      per100:{kcal:recipe.kcal||0,protein:recipe.protein||0,carbs:recipe.carbs||0,fat:recipe.fat||0}
+    }];
+  }
+
+  const meal=state.mealPlan[customMealTarget];
+  renderCustomModal(meal);
+
+  // Täytä tekstikentät renderöinnin jälkeen
+  setTimeout(()=>{
+    const n=document.getElementById('cm-name');
+    if(n) n.value=recipe.name||'';
+    const t=document.getElementById('cm-time');
+    if(t) t.value=recipe.time||'';
+    const i=document.getElementById('cm-instructions');
+    if(i) i.value=recipe.instructions||'';
+    // Poista kuvaesikatselu renderöinnin jälkeen (se on jo nähty)
+    const s=document.getElementById('cm-img-status');
+    if(s) s.innerHTML=`<div style="font-size:12px;color:var(--text3);padding:4px 0;">✅ Resepti tuotu AI:lta — tarkista ja tallenna</div>`;
+  },0);
+  showToast('Resepti tuotu! Tarkista tiedot ja tallenna.','success');
+}
+
+function searchQuickDB(query){
+  if(!query||query.length<2) return [];
+  const q=query.toLowerCase();
+  const out=[];
+  for(let i=0;i<AINESOSA_DB.length;i++){
+    if(AINESOSA_DB[i].name.toLowerCase().indexOf(q)!==-1){
+      out.push({...AINESOSA_DB[i],idx:i});
+      if(out.length>=20) break;
+    }
+  }
+  return out;
+}
+
+let cmLocalTimeout=null;
 function searchIngredients(query){
   if(cmSearchTab==='local') searchLocalIngredients(query);
   else searchApiIngredients(query);
@@ -1983,66 +2413,55 @@ function searchIngredients(query){
 
 function searchLocalIngredients(query){
   const results=document.getElementById('cm-ing-results');
+  clearTimeout(cmLocalTimeout);
   if(!query||query.length<2){results.className='cm-ing-results';results.innerHTML='';return;}
-  const q=query.toLowerCase();
-  const matches=AINESOSA_DB.map((a,i)=>({...a,idx:i})).filter(a=>a.name.toLowerCase().includes(q)).slice(0,8);
-  if(!matches.length){results.className='cm-ing-results open';results.innerHTML='<div style="padding:12px;color:var(--text3);font-size:13px;">Ei tuloksia — kokeile "Kaupan tuotteet" -hakua</div>';return;}
-  results.className='cm-ing-results open';
-  results.innerHTML=matches.map(a=>`
-    <div class="cm-ing-result" onclick="addIngredientFromDB(${a.idx})">
-      <div class="ir-left"><div class="ir-name">${sanitize(a.name)}</div><div class="ir-cat">${sanitize(a.cat)}</div></div>
-      <div class="ir-macros">${a.kcal} kcal · ${a.protein}g P · ${a.fat}g R<br>per 100g</div>
-    </div>
-  `).join('');
+  cmLocalTimeout=setTimeout(()=>{
+    const matches=searchQuickDB(query);
+    if(!matches.length){results.className='cm-ing-results open';results.innerHTML='<div style="padding:12px;color:var(--text3);font-size:13px;">Ei tuloksia</div>';return;}
+    results.className='cm-ing-results open';
+    results.innerHTML='<div style="padding:4px 12px;font-size:11px;color:var(--text3);">'+matches.length+' tulosta</div>'+matches.map(a=>`
+      <div class="cm-ing-result" onclick="addIngredientFromDB(${a.idx})">
+        <div class="ir-left"><div class="ir-name">${sanitize(a.name)}</div><div class="ir-cat">per 100g</div></div>
+        <div class="ir-macros">${a.kcal} kcal · ${a.protein}g P · ${a.fat}g R<br>per 100g</div>
+      </div>
+    `).join('');
+  },200);
 }
 
-// ── FI-TUOTEVÄLIMUISTI ──
-const FI_CACHE_KEY='ravinto_fi_products';
-const FI_CACHE_TTL=7*24*60*60*1000; // 7 päivää
-let fiProducts=null; // normalisoidut tuotteet muistissa
-
-function normalizeOFFProduct(p){
-  const n=p.nutriments;
-  return {
-    name:p.product_name,
-    brand:p.brands?p.brands.split(',')[0].trim():'',
-    kcal:Math.round(n['energy-kcal_100g']||n['energy-kcal']||0),
-    protein:Math.round((n.proteins_100g||n.proteins||0)*10)/10,
-    carbs:Math.round((n.carbohydrates_100g||n.carbohydrates||0)*10)/10,
-    fat:Math.round((n.fat_100g||n.fat||0)*10)/10,
-  };
-}
-
-async function initFiProductCache(){
-  // Lataa localStorage-välimuistista jos tuore
-  try{
-    const raw=localStorage.getItem(FI_CACHE_KEY);
-    if(raw){
-      const cached=JSON.parse(raw);
-      if(Date.now()-cached.ts<FI_CACHE_TTL){fiProducts=cached.products;return;}
+function searchApiIngredients(query){
+  const results=document.getElementById('cm-ing-results');
+  clearTimeout(cmApiTimeout);
+  if(!query||query.length<2){results.className='cm-ing-results';results.innerHTML='';return;}
+  // Näytä välimuistista heti
+  const cached=searchLocalFiProducts(query);
+  if(cached.length>0){
+    window._offProducts=cached;
+    results.className='cm-ing-results open';
+    results.innerHTML=cached.map((p,i)=>`
+      <div class="cm-ing-result" onclick="addIngredientFromAPI(${i})">
+        <div class="ir-left"><div class="ir-name">${sanitize(p.name)}</div>${p.brand?`<div class="ir-brand">${sanitize(p.brand)}</div>`:''}</div>
+        <div class="ir-macros">${p.kcal} kcal · ${p.protein}g P · ${p.carbs}g HH · ${p.fat}g R<br>per 100g</div>
+      </div>`).join('');
+  } else {
+    results.className='cm-ing-results open';
+    results.innerHTML='<div style="padding:12px;color:var(--text3);font-size:13px;">Haetaan...</div>';
+  }
+  // Live API-haku debounssilla
+  cmApiTimeout=setTimeout(async()=>{
+    const live=await searchOFFLive(query);
+    if(live.length>0){
+      window._offProducts=live;
+      results.className='cm-ing-results open';
+      results.innerHTML=live.map((p,i)=>`
+        <div class="cm-ing-result" onclick="addIngredientFromAPI(${i})">
+          <div class="ir-left"><div class="ir-name">${sanitize(p.name)}</div>${p.brand?`<div class="ir-brand">${sanitize(p.brand)}</div>`:''}</div>
+          <div class="ir-macros">${p.kcal} kcal · ${p.protein}g P · ${p.carbs}g HH · ${p.fat}g R<br>per 100g</div>
+        </div>`).join('');
+    } else if(!cached.length){
+      results.className='cm-ing-results open';
+      results.innerHTML='<div style="padding:12px;color:var(--text3);font-size:13px;">Ei tuloksia — kokeile toista hakusanaa</div>';
     }
-  }catch(e){}
-  // Hae taustalla 3 sivua (300 suosituinta suomalaista tuotetta)
-  try{
-    const pages=await Promise.all([1,2,3].map(page=>
-      fetch(`https://world.openfoodfacts.org/cgi/search.pl?action=process&json=1&page_size=100&page=${page}&sort_by=unique_scans_n&lc=fi&cc=fi&fields=product_name,brands,nutriments`)
-        .then(r=>r.json()).catch(()=>({products:[]}))
-    ));
-    const all=pages.flatMap(d=>(d.products||[]).filter(p=>{
-      const n=p.nutriments;
-      return p.product_name&&n&&n['energy-kcal_100g']!==undefined;
-    }).map(normalizeOFFProduct));
-    fiProducts=all;
-    localStorage.setItem(FI_CACHE_KEY,JSON.stringify({ts:Date.now(),products:all}));
-  }catch(e){console.warn('FI cache fetch failed:',e);}
-}
-
-function searchLocalFiProducts(query){
-  if(!fiProducts||!fiProducts.length) return null;
-  const q=query.toLowerCase();
-  return fiProducts.filter(p=>
-    p.name.toLowerCase().includes(q)||(p.brand&&p.brand.toLowerCase().includes(q))
-  ).slice(0,8);
+  },600);
 }
 
 function renderNormalizedProducts(products){
@@ -2064,47 +2483,18 @@ function renderNormalizedProducts(products){
     </div>`).join('');
 }
 
-function searchApiIngredients(query){
-  const results=document.getElementById('cm-ing-results');
-  if(!query||query.length<3){results.className='cm-ing-results';results.innerHTML='';return;}
-  const key=query.trim().toLowerCase();
-  // 1. Session-välimuisti
-  if(cmSearchCache.has(key)){renderNormalizedProducts(cmSearchCache.get(key));return;}
-  // 2. Paikallinen FI-tuotevälimuisti — välitön tulos
-  const local=searchLocalFiProducts(key);
-  if(local&&local.length>=2){renderNormalizedProducts(local);return;}
-  // 3. API-fallback jos ei löydy paikallisesti
-  clearTimeout(cmApiTimeout);
-  results.className='cm-ing-results open';
-  results.innerHTML='<div style="padding:12px;color:var(--text2);font-size:13px;">🔍 Haetaan...</div>';
-  cmApiTimeout=setTimeout(()=>fetchOpenFoodFacts(query),250);
-}
-
-async function fetchOpenFoodFacts(query){
-  const results=document.getElementById('cm-ing-results');
-  const key=query.trim().toLowerCase();
-  try{
-    const url=`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=10&lc=fi&cc=fi&fields=product_name,brands,nutriments`;
-    const resp=await fetch(url);
-    if(!resp.ok) throw new Error('API error');
-    const data=await resp.json();
-    const products=(data.products||[]).filter(p=>{
-      const n=p.nutriments;
-      return p.product_name&&n&&(n['energy-kcal_100g']!==undefined||n['energy-kcal']!==undefined);
-    }).slice(0,8).map(normalizeOFFProduct);
-    cmSearchCache.set(key,products);
-    renderNormalizedProducts(products);
-  }catch(err){
-    console.error('Open Food Facts error:',err);
-    results.innerHTML='<div style="padding:12px;color:var(--red);font-size:13px;">Haku epäonnistui — tarkista verkkoyhteytesi</div>';
-  }
+function _makeIng(name,per100,dbIdx=-1){
+  const kplW=getKplWeight(name);
+  const amount=kplW||100;
+  return {dbIdx,amount,name,per100,
+    kplMode:!!kplW,gramPerKpl:kplW||null};
 }
 
 function addIngredientFromAPI(idx){
   const p=window._offProducts?.[idx];
   if(!p) return;
   const name=p.brand?`${p.name} (${p.brand})`:p.name;
-  customIngredients.push({dbIdx:-1,amount:100,name,per100:{kcal:p.kcal,protein:p.protein,carbs:p.carbs,fat:p.fat}});
+  customIngredients.push(_makeIng(name,{kcal:p.kcal,protein:p.protein,carbs:p.carbs,fat:p.fat}));
   document.getElementById('cm-ing-search').value='';
   document.getElementById('cm-ing-results').className='cm-ing-results';
   const meal=state.mealPlan[customMealTarget];
@@ -2113,15 +2503,34 @@ function addIngredientFromAPI(idx){
 
 function addIngredientFromDB(dbIdx){
   const a=AINESOSA_DB[dbIdx];
-  customIngredients.push({dbIdx, amount:100, name:a.name, per100:{kcal:a.kcal, protein:a.protein, carbs:a.carbs, fat:a.fat}});
+  customIngredients.push(_makeIng(a.name,{kcal:a.kcal,protein:a.protein,carbs:a.carbs,fat:a.fat},dbIdx));
   document.getElementById('cm-ing-search').value='';
   document.getElementById('cm-ing-results').className='cm-ing-results';
   const meal=state.mealPlan[customMealTarget];
   renderCustomModal(meal);
 }
 
+function toggleIngUnit(i){
+  const ing=customIngredients[i];
+  const kplW=ing.gramPerKpl||getKplWeight(ing.name);
+  if(!kplW) return;
+  ing.kplMode=!ing.kplMode;
+  ing.gramPerKpl=kplW;
+  // Pyöristä grammamäärä kpl-rajaan
+  if(ing.kplMode) ing.amount=Math.max(kplW,Math.round(ing.amount/kplW)*kplW);
+  const meal=state.mealPlan[customMealTarget];
+  renderCustomModal(meal);
+}
+
 function updateIngAmount(i,val){
-  customIngredients[i].amount=Math.max(1,parseFloat(val)||1);
+  const ing=customIngredients[i];
+  const kplW=ing.gramPerKpl||getKplWeight(ing.name);
+  if(ing.kplMode&&kplW){
+    const kpl=Math.max(1,parseInt(val)||1);
+    ing.amount=kpl*kplW;
+  } else {
+    ing.amount=Math.max(1,parseFloat(val)||1);
+  }
   // Live-päivitys makrojen näytössä ilman full re-render
   const m=calcCustomMacros();
   const summary=document.querySelector('.cm-macro-summary');
@@ -2184,10 +2593,16 @@ async function saveCustomMeal(){
     ingredients:allIngredients,
     instructions,
     _custom:true,
+    _ingData:customIngredients.map(i=>({...i})),
   };
 
   const mi=customMealTarget;
-  state.mealPlan[mi].options.push(meal);
+  if(customMealEditOi!==null){
+    state.mealPlan[mi].options[customMealEditOi]=meal;
+    customMealEditOi=null;
+  } else {
+    state.mealPlan[mi].options.push(meal);
+  }
   await save('mealPlan',state.mealPlan);
   closeCustomModal();
   renderMealPlan();renderMacroStrip();
@@ -2437,6 +2852,7 @@ function renderSettingsTab(){
     </div>
     <div class="settings-section">
       <div class="ss-title">Sovellus</div>
+      <button class="btn-save-profile" onclick="location.reload()" style="margin-bottom:8px;">↺ Päivitä sivu</button>
       <button class="btn-reset" onclick="confirmReset()">🔄 Nollaa ohjelma</button>
     </div>`;
 }
@@ -2678,6 +3094,16 @@ function renderDiaryAddModal(){
     <button class="dam-save-btn" onclick="saveDiaryManual()">Lisää ateria</button>`;
   }
 
+  // AI-resepti-tab
+  if(diaryAddTab==='ai'){
+    bodyHtml=`<div style="padding:4px 0 12px;">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">Kerro mitä aineksia sinulla on, niin ehdotan aterian</p>
+      <textarea id="ai-recipe-ingredients" placeholder="esim. kana, riisi, parsa, valkosipuli..." rows="3" style="width:100%;box-sizing:border-box;background:var(--bg4);border:1.5px solid var(--border2);border-radius:var(--r-sm);padding:10px 12px;font-size:14px;color:var(--text);font-family:'Inter',sans-serif;resize:none;outline:none;"></textarea>
+      <button class="dam-save-btn" onclick="requestAIDiaryRecipe()" style="margin-top:10px;width:100%;">✨ Ehdota ateria</button>
+      <div id="ai-recipe-result"></div>
+    </div>`;
+  }
+
   // Suosikit-tab
   let favsHtml='';
   if(diaryAddTab==='favorites'){
@@ -2703,6 +3129,7 @@ function renderDiaryAddModal(){
       <button class="dam-tab ${diaryAddTab==='plan'?'active':''}" onclick="setDiaryAddTab('plan')">Ohjelma</button>
       <button class="dam-tab ${diaryAddTab==='search'?'active':''}" onclick="setDiaryAddTab('search')">Hae tuote</button>
       <button class="dam-tab ${diaryAddTab==='manual'?'active':''}" onclick="setDiaryAddTab('manual')">Manuaalinen</button>
+      <button class="dam-tab ${diaryAddTab==='ai'?'active':''}" onclick="setDiaryAddTab('ai')">🤖 AI-resepti</button>
     </div>
     ${bodyHtml}`;
 
@@ -2716,55 +3143,42 @@ function diarySearch(query){
     results.innerHTML='<div style="padding:12px 0;text-align:center;color:var(--text3);font-size:13px;">Kirjoita vähintään 2 merkkiä...</div>';
     return;
   }
-  const q=query.toLowerCase();
-  // 1. Näytä paikallinen tietokanta heti
-  const local=AINESOSA_DB.map((a,i)=>({...a,idx:i})).filter(a=>a.name.toLowerCase().includes(q)).slice(0,5);
-  // 2. Hae myös FI-tuotevälimuistista
-  const fiLocal=searchLocalFiProducts(q)||[];
-  renderDiarySearchResults(local,fiLocal.slice(0,5),query);
-  // 3. API-haku jos välimuistissa ei tarpeeksi tuloksia
-  if(fiLocal.length<2&&query.length>=3){
-    diarySearchTimeout=setTimeout(()=>fetchDiaryOpenFoodFacts(query),300);
-  }
+  // Näytä heti paikalliset tulokset + spinne
+  const localDb=searchQuickDB(query);
+  const localFi=searchLocalFiProducts(query);
+  renderDiarySearchResults(localDb,localFi,query,true);
+  // Hae aina live API (deduplointi renderissä)
+  diarySearchTimeout=setTimeout(async()=>{
+    const live=await searchOFFLive(query);
+    renderDiarySearchResults(localDb,live,query,false);
+  },500);
 }
 
-function renderDiarySearchResults(localDb,apiProducts,query){
+function renderDiarySearchResults(localDb,apiProducts,query,loading){
   const results=document.getElementById('diary-search-results');
   if(!results) return;
+  // Deduploi API-tulokset paikallisten nimien perusteella
+  const localNames=new Set(localDb.map(a=>a.name.toLowerCase()));
+  const deduped=apiProducts.filter(p=>!localNames.has(p.name.toLowerCase()));
   const dbRows=localDb.map(a=>`
     <div class="dam-search-result" onclick="addDiaryFromDB(${a.idx})">
-      <div><div class="dam-sr-name">${sanitize(a.name)}</div><div class="dam-sr-cat">${sanitize(a.cat)} · per 100g</div></div>
+      <div><div class="dam-sr-name">${sanitize(a.name)}</div><div class="dam-sr-cat">per 100g</div></div>
       <div class="dam-sr-macros">${a.kcal} kcal<br>${a.protein}g P</div>
     </div>`).join('');
-  window._diaryApiProducts=apiProducts;
-  const apiRows=apiProducts.map((p,i)=>`
+  window._diaryApiProducts=deduped;
+  const apiRows=deduped.map((p,i)=>`
     <div class="dam-search-result" onclick="addDiaryFromApiProduct(${i})">
       <div><div class="dam-sr-name">${sanitize(p.name)}</div><div class="dam-sr-cat">${sanitize(p.brand||'Kaupan tuote')} · per 100g</div></div>
       <div class="dam-sr-macros">${p.kcal} kcal<br>${p.protein}g P</div>
     </div>`).join('');
-  const apiHeader=apiProducts.length?`<div style="padding:6px 0 4px;font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.5px;text-transform:uppercase;">Kaupan tuotteet</div>`:'';
-  if(!dbRows&&!apiRows){
-    results.innerHTML='<div style="padding:12px 0;text-align:center;color:var(--text3);font-size:13px;">Haetaan...</div>';
+  const spinner=loading?'<div style="padding:8px 0;text-align:center;color:var(--text3);font-size:12px;">🔍 Haetaan verkosta...</div>':'';
+  if(!dbRows.length&&!apiRows.length){
+    results.innerHTML=loading
+      ?'<div style="padding:12px 0;text-align:center;color:var(--text3);font-size:13px;">🔍 Haetaan...</div>'
+      :'<div style="padding:12px 0;text-align:center;color:var(--text3);font-size:13px;">Ei tuloksia — kokeile eri hakusanaa</div>';
     return;
   }
-  results.innerHTML=dbRows+apiHeader+apiRows;
-}
-
-async function fetchDiaryOpenFoodFacts(query){
-  const results=document.getElementById('diary-search-results');
-  if(!results) return;
-  try{
-    const url=`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=8&lc=fi&cc=fi&fields=product_name,brands,nutriments`;
-    const resp=await fetch(url);
-    const data=await resp.json();
-    const products=(data.products||[]).filter(p=>{
-      const n=p.nutriments;
-      return p.product_name&&n&&n['energy-kcal_100g']!==undefined;
-    }).map(normalizeOFFProduct);
-    const q=query.toLowerCase();
-    const local=AINESOSA_DB.map((a,i)=>({...a,idx:i})).filter(a=>a.name.toLowerCase().includes(q)).slice(0,5);
-    renderDiarySearchResults(local,products.slice(0,6),query);
-  }catch(e){/* offline tai API-virhe, paikalliset tulokset jo näkyvissä */}
+  results.innerHTML=dbRows+apiRows+spinner;
 }
 
 async function addDiaryFromApiProduct(idx){
@@ -3354,101 +3768,79 @@ function closeShoppingModal(e){
 }
 
 // ═══════════════════════════════════════════
-// PHASE 4: RESTAURANT MODE
+// AI-RESEPTI PÄIVÄKIRJAAN
 // ═══════════════════════════════════════════
-function openRestaurantMode(){
-  const today=todayISO();
-  const eaten=calcDiaryEaten(today);
+async function requestAIDiaryRecipe(){
+  const textarea=document.getElementById('ai-recipe-ingredients');
+  const ingredients=textarea?.value.trim();
+  if(!ingredients){showToast('Kirjoita ainekset ensin','error');return;}
+  const resultDiv=document.getElementById('ai-recipe-result');
+  if(!resultDiv) return;
   const m=state.profile?.macros||{kcal:2000,protein:150,carbs:200,fat:70};
-  const remKcal=Math.max(0,m.kcal-eaten.kcal);
-  const remP=Math.max(0,m.protein-eaten.protein);
-  const remC=Math.max(0,m.carbs-eaten.carbs);
-  const remF=Math.max(0,m.fat-eaten.fat);
-  const isOffline=!navigator.onLine;
-
-  const content=document.getElementById('restaurant-modal-content');
-  content.innerHTML=`
-    <div class="restaurant-title">🍽️ Ravintola-moodi</div>
-    <div class="restaurant-sub">Selvitä mitä tilata ravintolassa makrotavoitteidesi mukaan</div>
-    <div class="restaurant-remaining">
-      <div class="restaurant-remaining-title">Jäljellä tänään</div>
-      <div class="restaurant-remaining-macros">
-        <div><div class="rrm">${remKcal}</div><div class="rrm-label">kcal</div></div>
-        <div><div class="rrm" style="color:var(--blue)">${remP}g</div><div class="rrm-label">Prot.</div></div>
-        <div><div class="rrm" style="color:var(--accent)">${remC}g</div><div class="rrm-label">HH</div></div>
-        <div><div class="rrm" style="color:var(--green)">${remF}g</div><div class="rrm-label">Rasva</div></div>
-      </div>
-    </div>
-    <div class="restaurant-field">
-      <label>Ravintolan nimi / keittiötyyppi</label>
-      <input id="rest-name" type="text" placeholder="esim. Kiinalainen, Pizzeria, Fine dining...">
-    </div>
-    <div id="restaurant-suggestion-area"></div>
-    <div class="restaurant-actions">
-      <button class="ra-close" onclick="closeRestaurantModal()">Sulje</button>
-      <button class="ra-generate" onclick="requestRestaurantSuggestion()">${isOffline?'Ehdotus (Offline)':'✨ AI-ehdotus'}</button>
-    </div>`;
-  document.getElementById('restaurant-modal').style.display='flex';
-}
-
-async function requestRestaurantSuggestion(){
-  const restName=document.getElementById('rest-name')?.value.trim()||'ravintola';
-  const today=todayISO();
-  const eaten=calcDiaryEaten(today);
-  const m=state.profile?.macros||{kcal:2000,protein:150,carbs:200,fat:70};
-  const remKcal=Math.max(0,m.kcal-eaten.kcal);
-  const remP=Math.max(0,m.protein-eaten.protein);
-  const area=document.getElementById('restaurant-suggestion-area');
-  if(!area) return;
 
   if(!navigator.onLine){
-    area.innerHTML=`<div class="restaurant-suggestion">
-      <div class="restaurant-suggestion-title">💡 Ehdotus (offline)</div>
-      <div class="restaurant-suggestion-text">Valitse proteiinipitoinen pääruoka, vältä rasvaisia lisukkeita. Tavoittele noin ${remKcal} kcal ja ${remP}g proteiinia. Hyviä valintoja: grillattua kanaa tai kalaa, salaatti lisukkeena, riisi tai peruna.</div>
-    </div>`;
+    resultDiv.innerHTML=`<div class="ai-recipe-card"><div class="arc-emoji">🍽️</div><div class="arc-title">Offline-ehdotus</div><div class="arc-desc">Valmista ateria aineksistasi: proteiini + kasvis + hiilihydraattilisäke. Mausta haluamillasi mausteilla.</div><div class="arc-macros"><span>~${Math.round(m.kcal/3)} kcal</span></div></div>`;
     return;
   }
-
-  if(!_hasClaudeStorage && !state.profile?.apiKey){
-    area.innerHTML=`<div class="restaurant-suggestion">
-      <div class="restaurant-suggestion-title">🔑 API-avain puuttuu</div>
-      <div class="restaurant-suggestion-text">Lisää Anthropic API-avain Asetuksissa → AI-asetukset käyttääksesi AI-ehdotuksia kotinäytöltä.</div>
-    </div>`;
+  if(!_hasClaudeStorage&&!state.profile?.apiKey){
+    resultDiv.innerHTML=`<div class="ai-recipe-card"><div class="arc-title">🔑 API-avain puuttuu</div><div class="arc-desc">Lisää Anthropic API-avain Asetuksissa → AI-asetukset.</div></div>`;
     return;
   }
-
-  area.innerHTML=`<div style="padding:12px;color:var(--text2);font-size:13px;"><span class="spinner"></span> Generoidaan ehdotusta...</div>`;
-
+  resultDiv.innerHTML=`<div style="padding:12px;color:var(--text2);font-size:13px;"><span class="spinner"></span> Generoidaan ehdotusta...</div>`;
   try{
     const response=await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",
       headers:getAnthropicHeaders(),
       body:JSON.stringify({
         model:"claude-sonnet-4-20250514",
-        max_tokens:500,
-        system:"Olet suomalainen ravintoneuvoja. Anna lyhyt, konkreettinen ravintolasuositus suomeksi. Vastaa 2-4 lauseella.",
-        messages:[{role:"user",content:`Olen ravintolassa: ${restName}. Minulla on jäljellä päivän makroista: ${remKcal} kcal, ${remP}g proteiinia, ${Math.max(0,m.carbs-eaten.carbs)}g hiilihydraatteja, ${Math.max(0,m.fat-eaten.fat)}g rasvaa. Mitä minun kannattaisi tilata?`}],
+        max_tokens:400,
+        system:"Olet ravintoneuvoja. Vastaa AINOASTAAN validilla JSON-objektilla, ei muuta tekstiä.",
+        messages:[{role:"user",content:`Käyttäjällä on aineksia: ${ingredients}. Makrotavoitteet: ${m.kcal} kcal, ${m.protein}g proteiinia, ${m.carbs}g HH, ${m.fat}g rasvaa. Ehdota yksi terveellinen ateria. Vastaa JSON: {"name":"...","description":"...","kcal":0,"protein":0,"carbs":0,"fat":0,"emoji":"..."}`}]
       })
     });
     if(!response.ok) throw new Error('API error');
     const data=await response.json();
     const text=data.content?.map(c=>c.text||'').join('')||'';
-    area.innerHTML=`<div class="restaurant-suggestion">
-      <div class="restaurant-suggestion-title">✨ AI-ehdotus</div>
-      <div class="restaurant-suggestion-text">${sanitizeNL(text)}</div>
+    const jsonMatch=text.match(/\{[\s\S]*\}/);
+    if(!jsonMatch) throw new Error('no json');
+    const meal=JSON.parse(jsonMatch[0]);
+    window._aiRecipeMeal=meal;
+    resultDiv.innerHTML=`<div class="ai-recipe-card">
+      <div class="arc-emoji">${sanitize(meal.emoji||'🍽️')}</div>
+      <div class="arc-title">${sanitize(meal.name||'')}</div>
+      <div class="arc-desc">${sanitize(meal.description||'')}</div>
+      <div class="arc-macros">
+        <span>${Math.round(meal.kcal||0)} kcal</span>
+        <span style="color:var(--blue)">${Math.round(meal.protein||0)}g P</span>
+        <span style="color:var(--accent)">${Math.round(meal.carbs||0)}g HH</span>
+        <span style="color:var(--green)">${Math.round(meal.fat||0)}g R</span>
+      </div>
+      <button class="dam-save-btn" onclick="addAIRecipeToDiary()" style="width:100%;margin-top:4px;">+ Lisää päiväkirjaan</button>
     </div>`;
   }catch(err){
-    console.error('Restaurant AI error:',err);
-    area.innerHTML=`<div class="restaurant-suggestion">
-      <div class="restaurant-suggestion-title">💡 Ehdotus</div>
-      <div class="restaurant-suggestion-text">Valitse proteiinipitoinen pääruoka, vältä rasvaisia lisukkeita. Tavoittele noin ${remKcal} kcal ja ${remP}g proteiinia. Hyviä valintoja: grillattua kanaa tai kalaa, salaatti lisukkeena, riisi tai peruna.</div>
-    </div>`;
+    console.error('AI recipe error:',err);
+    resultDiv.innerHTML=`<div class="ai-recipe-card"><div class="arc-title">Virhe</div><div class="arc-desc">Yritä uudelleen.</div></div>`;
   }
 }
 
-function closeRestaurantModal(e){
-  if(!e||e.target===document.getElementById('restaurant-modal'))
-    document.getElementById('restaurant-modal').style.display='none';
+async function addAIRecipeToDiary(){
+  const meal=window._aiRecipeMeal;
+  if(!meal) return;
+  const dateStr=state.currentDate||todayISO();
+  const day=ensureDiaryDay(dateStr);
+  day.slots[diaryAddTarget].push({
+    name:meal.name||'AI-ateria',
+    emoji:meal.emoji||'🤖',
+    kcal:Math.round(meal.kcal||0),
+    protein:Math.round(meal.protein||0),
+    carbs:Math.round(meal.carbs||0),
+    fat:Math.round(meal.fat||0)
+  });
+  await save('diary',state.diary);
+  closeDiaryAddModal();
+  renderDiaryTab();
+  if(dateStr===todayISO()) renderMacroStrip();
+  showToast('AI-ateria lisätty!','success');
 }
 
 // ═══════════════════════════════════════════
@@ -3568,6 +3960,7 @@ async function init(){
     if(lbl) lbl.textContent=state.trainingDay?'Treenipäivä':'Lepopäivä';
     switchTab('program');showMainApp();
   } else {
+    document.querySelector('.tab-bar').style.display='none';
     state.obStep=1;renderOnboarding();
   }
 }
