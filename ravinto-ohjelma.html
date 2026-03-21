@@ -242,6 +242,36 @@ select option{background:var(--bg3);}
 .rm-edit-btn:hover{border-color:var(--accent);color:var(--accent);}
 .fav-badge{font-size:12px;margin-left:4px;vertical-align:middle;}
 
+/* Meal prep toggle & section */
+.rm-mp-toggle{width:100%;margin-top:12px;padding:12px 16px;border-radius:var(--r);background:var(--accent-dim);border:1.5px solid var(--accent);color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .2s;}
+.rm-mp-toggle.active{background:var(--accent);color:#111;}
+.rm-mp-section{background:var(--bg3);border-radius:var(--r);padding:14px;margin-top:10px;}
+.rm-mp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.rm-mp-title{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.3px;}
+.rm-mp-stepper{display:flex;align-items:center;gap:12px;}
+.rm-mp-stepper button{width:30px;height:30px;border-radius:50%;background:var(--bg4);border:1.5px solid var(--border2);color:var(--text);font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.rm-mp-stepper button:hover{border-color:var(--accent);color:var(--accent);}
+.rm-mp-stepper span{font-size:16px;font-weight:800;min-width:20px;text-align:center;}
+.rm-mp-macros{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;text-align:center;}
+.rm-mp-macro{background:var(--bg4);border-radius:var(--r-sm);padding:8px 4px;}
+.rm-mp-macro h4{font-size:15px;font-weight:800;margin-bottom:2px;}
+.rm-mp-macro p{font-size:10px;color:var(--text2);font-weight:600;}
+.rm-mp-macro.kcal h4{color:var(--text);}
+.rm-mp-macro.prot h4{color:var(--blue);}
+.rm-mp-macro.carb h4{color:var(--accent);}
+.rm-mp-macro.fat h4{color:var(--green);}
+.rm-mp-ing{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.rm-mp-ing .ri-amount{color:var(--accent);font-weight:700;min-width:60px;}
+.rm-mp-ing .ri-name{color:var(--text2);}
+/* Custom modal meal prep */
+.cm-mp-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border-radius:var(--r);border:1.5px solid var(--border2);margin-bottom:8px;cursor:pointer;transition:all .2s;}
+.cm-mp-row.active{border-color:var(--accent);background:var(--accent-dim);}
+.cm-mp-row-label{font-size:14px;font-weight:600;flex:1;}
+.cm-mp-count{display:flex;align-items:center;gap:10px;margin-top:8px;}
+.cm-mp-count label{font-size:13px;color:var(--text2);font-weight:600;}
+.cm-mp-count input{width:72px;text-align:center;}
+.cm-mp-count span{font-size:13px;color:var(--text2);}
+
 /* Custom meal modal */
 .custom-modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 20px calc(32px + env(safe-area-inset-bottom));}
 .cm-title{font-size:20px;font-weight:800;margin-bottom:4px;}
@@ -1703,6 +1733,69 @@ function renderMealOption(opt,mi,oi,hidden=false){
 }
 
 // ── Recipe Modal ──
+let recipeMpMode=false;
+let recipeMpServings=4;
+let recipeMpMi=null;
+let recipeMpOi=null;
+
+function scaledIngredient(amount,mult){
+  if(mult===1||!amount) return amount;
+  return amount.replace(/[\d]+([.,][\d]+)?/,n=>{
+    const v=parseFloat(n.replace(',','.'))*mult;
+    return v%1===0?v:Math.round(v*10)/10;
+  });
+}
+
+function renderMpSection(opt){
+  const s=recipeMpServings;
+  const ingsHtml=(opt.ingredients||[]).map(ing=>
+    `<div class="rm-mp-ing"><div class="ri-amount">${sanitize(scaledIngredient(ing.a,s))}</div><div class="ri-name">${sanitize(ing.n)}</div></div>`
+  ).join('');
+  return `
+    <div class="rm-mp-section" id="rm-mp-section">
+      <div class="rm-mp-header">
+        <div class="rm-mp-title">📦 Meal prep · ${s} annosta</div>
+        <div class="rm-mp-stepper">
+          <button onclick="changeMpServings(-1)">−</button>
+          <span id="rm-mp-count">${s}</span>
+          <button onclick="changeMpServings(1)">+</button>
+        </div>
+      </div>
+      <div class="rm-mp-macros">
+        <div class="rm-mp-macro kcal"><h4>${Math.round((opt.kcal||0)*s)}</h4><p>kcal</p></div>
+        <div class="rm-mp-macro prot"><h4>${Math.round((opt.protein||0)*s)}g</h4><p>Proteiini</p></div>
+        <div class="rm-mp-macro carb"><h4>${Math.round((opt.carbs||0)*s)}g</h4><p>HH</p></div>
+        <div class="rm-mp-macro fat"><h4>${Math.round((opt.fat||0)*s)}g</h4><p>Rasva</p></div>
+      </div>
+      <div class="rm-mp-ings">${ingsHtml||'<div style="color:var(--text3);font-size:13px;">Ei aineksia lisätty</div>'}</div>
+      <button onclick="saveMpServings()" style="margin-top:12px;width:100%;padding:10px;border-radius:var(--r-sm);background:var(--bg4);border:1.5px solid var(--border2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;">💾 Tallenna annosmäärä (${s} annosta)</button>
+    </div>`;
+}
+
+function toggleMpMode(){
+  recipeMpMode=!recipeMpMode;
+  const btn=document.getElementById('rm-mp-btn');
+  if(btn) btn.classList.toggle('active',recipeMpMode);
+  const container=document.getElementById('rm-mp-container');
+  if(!container) return;
+  const opt=state.mealPlan[recipeMpMi].options[recipeMpOi];
+  container.innerHTML=recipeMpMode?renderMpSection(opt):'';
+}
+
+function changeMpServings(delta){
+  recipeMpServings=Math.min(7,Math.max(2,recipeMpServings+delta));
+  const opt=state.mealPlan[recipeMpMi].options[recipeMpOi];
+  const container=document.getElementById('rm-mp-container');
+  if(container) container.innerHTML=renderMpSection(opt);
+}
+
+async function saveMpServings(){
+  const opt=state.mealPlan[recipeMpMi].options[recipeMpOi];
+  opt.mealPrepServings=recipeMpServings;
+  await save('mealPlan',state.mealPlan);
+  showToast('✅ Meal prep annosmäärä tallennettu','success');
+}
+
 function openRecipe(mi,oi){
   const meal=state.mealPlan[mi];
   const opt=meal.options[oi];if(!opt)return;
@@ -1710,6 +1803,10 @@ function openRecipe(mi,oi){
   const content=document.getElementById('recipe-modal-content');
   const selected=state.selectedOptions[mi]===oi;
   const canDelete=meal.options.length>1;
+
+  // Init meal prep state
+  recipeMpMi=mi; recipeMpOi=oi; recipeMpMode=false;
+  recipeMpServings=opt.mealPrepServings||4;
 
   const imgHtml=`<div class="recipe-img-placeholder">${sanitize(opt.emoji||'🍽️')}</div>`;
   const ingredientsHtml=(opt.ingredients||[]).map(ing=>
@@ -1725,7 +1822,7 @@ function openRecipe(mi,oi){
       <div class="rm-title">${sanitize(opt.name)} ${sanitize(opt.emoji||'')}</div>
       <div class="rm-meta">
         <span class="mo-pill kcal">⏱ ${sanitize(opt.time||'?')}</span>
-        ${opt.mealPrep?'<span class="mo-pill c">📦 Meal prep</span>':''}
+        ${opt.mealPrep?'<span class="mo-pill c">📦 Meal prep · '+recipeMpServings+' annosta</span>':''}
         <span class="mo-pill kcal">${sanitize(meal.slot)}</span>
       </div>
       <div class="rm-macros">
@@ -1738,6 +1835,7 @@ function openRecipe(mi,oi){
       <div class="rm-ingredients">${ingredientsHtml||'<div style="color:var(--text3);font-size:13px;">Ei aineksia lisätty</div>'}</div>
       <div class="rm-section-title">Valmistusohje</div>
       <div class="rm-instructions" style="white-space:pre-line;">${sanitizeNL(opt.instructions||'Ei ohjetta.')}</div>
+      ${opt.mealPrep?`<button id="rm-mp-btn" class="rm-mp-toggle" onclick="toggleMpMode()">📦 Näytä meal prep -määrät <span>›</span></button><div id="rm-mp-container"></div>`:''}
       <button class="rm-select-btn" onclick="selectMealOption(${mi},${oi})">${selected?'✓ Valittu':'Valitse tämä ateria'}</button>
       <button id="fav-toggle-btn" class="rm-fav-btn${isFavorite(opt.name)?' active':''}" onclick="toggleFavorite('${sanitize(opt.name).replace(/'/g,"\\'")}',state.mealPlan[${mi}].options[${oi}])">${isFavorite(opt.name)?'❤️ Suosikki':'🤍 Lisää suosikkeihin'}</button>
       <button class="rm-edit-btn" onclick="closeRecipeModal();editCustomMeal(${mi},${oi})">✏️ Muokkaa reseptiä</button>
@@ -2072,6 +2170,10 @@ function editCustomMeal(mi,oi){
     const n=document.getElementById('cm-name'); if(n) n.value=opt.name||'';
     const t=document.getElementById('cm-time'); if(t) t.value=opt.time||'';
     const ins=document.getElementById('cm-instructions'); if(ins) ins.value=opt.instructions||'';
+    if(opt.mealPrep){
+      toggleCmMealPrep();
+      const c=document.getElementById('cm-mealprep-count'); if(c) c.value=opt.mealPrepServings||4;
+    }
   },0);
 }
 
@@ -2194,11 +2296,36 @@ function renderCustomModal(meal){
       <textarea id="cm-instructions" rows="3" placeholder="Vapaaehtoinen valmistusohje..."></textarea>
     </div>
 
+    <div class="cm-field">
+      <label class="cm-label">📦 Meal prep</label>
+      <div class="cm-mp-row" id="cm-mp-row" onclick="toggleCmMealPrep()">
+        <span style="font-size:18px;">📦</span>
+        <span class="cm-mp-row-label">Valmistan kerralla useamman annoksen</span>
+        <span id="cm-mp-check" style="font-size:18px;color:var(--text3);">○</span>
+      </div>
+      <div class="cm-mp-count" id="cm-mp-count-row" style="display:none;">
+        <label>Valmista kerralla</label>
+        <input id="cm-mealprep-count" type="number" min="2" max="7" value="4" oninput="this.value=Math.min(7,Math.max(2,parseInt(this.value)||2))">
+        <span>annosta</span>
+      </div>
+    </div>
+
     <div class="cm-actions">
       <button class="cm-cancel" onclick="closeCustomModal()">Peruuta</button>
       <button class="cm-save" onclick="saveCustomMeal()">Tallenna</button>
     </div>
   `;
+}
+
+function toggleCmMealPrep(){
+  const row=document.getElementById('cm-mp-row');
+  const check=document.getElementById('cm-mp-check');
+  const countRow=document.getElementById('cm-mp-count-row');
+  if(!row) return;
+  const isActive=row.classList.toggle('active');
+  if(check) check.textContent=isActive?'●':'○';
+  if(check) check.style.color=isActive?'var(--accent)':'var(--text3)';
+  if(countRow) countRow.style.display=isActive?'flex':'none';
 }
 
 function setCmSearchTab(tab){
@@ -2587,9 +2714,12 @@ async function saveCustomMeal(){
     ...customFreeIngredients.filter(i=>i.n.trim()).map(i=>({a:i.a,n:i.n})),
   ];
 
+  const mealPrep=!!(document.getElementById('cm-mp-row')?.classList.contains('active'));
+  const mealPrepServings=mealPrep?Math.min(7,Math.max(2,parseInt(document.getElementById('cm-mealprep-count')?.value||4))):1;
+
   const meal={
     name,kcal:m.kcal,protein:m.protein,carbs:m.carbs,fat:m.fat,
-    emoji:customEmoji,time,mealPrep:false,
+    emoji:customEmoji,time,mealPrep,mealPrepServings,
     ingredients:allIngredients,
     instructions,
     _custom:true,
