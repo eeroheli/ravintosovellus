@@ -263,6 +263,24 @@ select option{background:var(--bg3);}
 .rm-mp-ing{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;}
 .rm-mp-ing .ri-amount{color:var(--accent);font-weight:700;min-width:60px;}
 .rm-mp-ing .ri-name{color:var(--text2);}
+.rm-mp-toggle-lite{background:var(--bg3);border-color:var(--border2);color:var(--text2);}
+.prep-badge{font-size:12px;margin-left:4px;vertical-align:middle;}
+.prep-active-label{color:var(--accent);font-size:11px;font-weight:600;}
+.rm-mp-stat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);}
+.rm-mp-stat-row span:last-child{font-weight:700;color:var(--text);}
+.rm-mp-storage{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;background:var(--bg4);border-radius:var(--r-sm);margin-bottom:10px;}
+.rm-mp-storage-icon{font-size:18px;flex-shrink:0;}
+.rm-mp-storage-title{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:2px;}
+.rm-mp-storage-note{font-size:12px;color:var(--text);}
+.rm-mp-plan-section{background:var(--bg4);border-radius:var(--r-sm);padding:12px;margin-top:10px;}
+.rm-mp-plan-title{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:10px;letter-spacing:.3px;}
+.rm-mp-plan-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;}
+.rm-mp-plan-row label{font-size:12px;color:var(--text2);font-weight:600;flex-shrink:0;}
+.rm-mp-plan-row select{flex:1;padding:8px 10px;font-size:13px;background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--text);}
+.rm-mp-date-preview{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.rm-mp-date-chip{padding:4px 10px;border-radius:20px;background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent);font-size:11px;font-weight:600;}
+.rm-mp-add-days-btn{width:100%;padding:12px;border-radius:var(--r);background:var(--accent);color:#111;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s;}
+.rm-mp-add-days-btn:hover{background:var(--accent-dark);}
 /* Custom modal meal prep */
 .cm-mp-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border-radius:var(--r);border:1.5px solid var(--border2);margin-bottom:8px;cursor:pointer;transition:all .2s;}
 .cm-mp-row.active{border-color:var(--accent);background:var(--accent-dim);}
@@ -825,7 +843,7 @@ const MEAL_DB = {
     {name:'Muna-Baageli',emoji:'🥯',time:'10 min',mealPrep:false,kcal:480,protein:28,carbs:54,fat:16,
      ingredients:[{a:'1 kpl',n:'Täysjyväbaageli'},{a:'2 kpl',n:'Kananmunat'},{a:'30g',n:'Juusto'},{a:'30g',n:'Savulohi'},{a:'käsi',n:'Rucula'}],
      instructions:'Paista munat rikki pannulla maustamalla suolalla ja pippurilla. Leikkaa baageli kahtia ja paahda. Kasaa: baageli, munat, savulohi, juusto, rucula.'},
-    {name:'Proteiinipannukakut',emoji:'🥞',time:'20 min',mealPrep:true,kcal:560,protein:38,carbs:58,fat:16,
+    {name:'Proteiinipannukakut',emoji:'🥞',time:'20 min',mealPrep:true,keepsDays:3,storageNote:'Jääkaapissa 3 vrk, pakastettuna 2 kk',kcal:560,protein:38,carbs:58,fat:16,
      ingredients:[{a:'100g',n:'Rahka'},{a:'2 kpl',n:'Kananmunat'},{a:'40g',n:'Kaurahiutaleet'},{a:'1 tl',n:'Leivinjauhetta'},{a:'100g',n:'Mansikka'}],
      instructions:'Sekoita rahka, munat, kaurahiutaleet ja leivinjauhe tasaiseksi taikinaksi. Paista pannulla pieniä pannukakkuja kullanruskeiksi. Tarjoa mansikkojen kanssa.'},
     {name:'Smoothie bowl',emoji:'🍓',time:'5 min',mealPrep:false,kcal:490,protein:30,carbs:64,fat:10,
@@ -833,16 +851,16 @@ const MEAL_DB = {
      instructions:'Sekoita jogurtti, marjat, banaani ja proteiinijauhe tehosekoittimella. Kaada kulhoon ja ripottele päälle granolaa.'},
   ],
   Lounas: [
-    {name:'Kanarisotto',emoji:'🍚',time:'30 min',mealPrep:true,kcal:680,protein:48,carbs:72,fat:18,
+    {name:'Kanarisotto',emoji:'🍚',time:'30 min',mealPrep:true,keepsDays:4,storageNote:'Jääkaapissa 4 vrk, pakastettuna 2 kk',kcal:680,protein:48,carbs:72,fat:18,
      ingredients:[{a:'150g',n:'Kanafilee'},{a:'80g',n:'Arborioriisi'},{a:'0.5l',n:'Kanafondi'},{a:'1 kpl',n:'Sipuli'},{a:'2 kpl',n:'Valkosipulin kynsi'},{a:'30g',n:'Parmesaani'}],
      instructions:'Kuullota sipuli ja valkosipuli öljyssä. Lisää riisi ja paista hetki. Lisää fondii kauhallinen kerrallaan välillä sekoittaen 20 min. Paista kana erillisessä pannussa ja sekoita risottoon. Viimeistele parmesaanilla.'},
     {name:'Lohikeitto',emoji:'🐟',time:'25 min',mealPrep:false,kcal:620,protein:42,carbs:40,fat:28,
      ingredients:[{a:'200g',n:'Lohifilee'},{a:'3 kpl',n:'Peruna'},{a:'2dl',n:'Kerma'},{a:'1l',n:'Vesi'},{a:'1 kpl',n:'Porkkana'},{a:'1 kpl',n:'Sipuli'},{a:'1 nippu',n:'Tilli'}],
      instructions:'Kuori ja pilko perunat ja porkkana. Keitä ne suolavedessä puolikypsiksi. Lisää kuutioidut lohipalat ja kerma. Keitä 5 min. Mausta suolalla, pippurilla. Tarjoa tillillä.'},
-    {name:'Kanavihannespata',emoji:'🍲',time:'35 min',mealPrep:true,kcal:590,protein:50,carbs:44,fat:16,
+    {name:'Kanavihannespata',emoji:'🍲',time:'35 min',mealPrep:true,keepsDays:4,storageNote:'Jääkaapissa 4 vrk, pakastettuna 3 kk',kcal:590,protein:50,carbs:44,fat:16,
      ingredients:[{a:'200g',n:'Kanafilee'},{a:'200g',n:'Tomaattimurska'},{a:'1 kpl',n:'Paprika'},{a:'1 kpl',n:'Kesäkurpitsa'},{a:'100g',n:'Kikherneet'},{a:'2 tl',n:'Currymauste'}],
      instructions:'Kuutioi kana ja vihannekset. Paista kana pannulla ruskistuen. Lisää vihannekset, tomaattimurska ja mausteet. Hauduta miedolla lämmöllä 20 min. Lisää kikherneet ja keitä 5 min lisää.'},
-    {name:'Tonnikala-pastasalaatti',emoji:'🥗',time:'15 min',mealPrep:true,kcal:560,protein:38,carbs:62,fat:14,
+    {name:'Tonnikala-pastasalaatti',emoji:'🥗',time:'15 min',mealPrep:true,keepsDays:3,storageNote:'Jääkaapissa 3 vrk (ilman kastiketta pidempään)',kcal:560,protein:38,carbs:62,fat:14,
      ingredients:[{a:'80g',n:'Täysjyväpasta'},{a:'1 prk',n:'Tonnikala (140g)'},{a:'100g',n:'Kirsikkatomaatti'},{a:'50g',n:'Feta'},{a:'2 rkl',n:'Oliiviöljy'},{a:'käsi',n:'Lehtikaali'}],
      instructions:'Keitä pasta al denteksi. Valuta tonnikala. Sekoita kulhossa pasta, tonnikala, tomaatit, lehtikaali ja öljy. Mausta suolalla ja pippurilla. Murustele fetajuusto päälle.'},
   ],
@@ -858,16 +876,16 @@ const MEAL_DB = {
      instructions:'Laita kaikki ainekset tehosekoittimeen. Sekoita tasaiseksi. Tarjoa heti.'},
   ],
   Päivällinen: [
-    {name:'Kanafilee & riisi & vihannekset',emoji:'🍗',time:'30 min',mealPrep:true,kcal:620,protein:52,carbs:58,fat:16,
+    {name:'Kanafilee & riisi & vihannekset',emoji:'🍗',time:'30 min',mealPrep:true,keepsDays:4,storageNote:'Jääkaapissa 4 vrk, pakastettuna 2 kk',kcal:620,protein:52,carbs:58,fat:16,
      ingredients:[{a:'180g',n:'Kanafilee'},{a:'70g',n:'Jasmiiniriisi'},{a:'150g',n:'Parsakaali'},{a:'1 kpl',n:'Paprika'},{a:'2 rkl',n:'Soijakastike'},{a:'1 tl',n:'Seesamöljy'}],
      instructions:'Marinoi kana soijakastikkeella ja seesamöljyllä 10 min. Keitä riisi. Paista kana grillipannulla 6-7 min per puoli. Höyrytä vihannekset. Kokoa annos riisi-kana-vihannekset.'},
     {name:'Lohipaisti & perunat',emoji:'🐠',time:'25 min',mealPrep:false,kcal:640,protein:46,carbs:42,fat:28,
      ingredients:[{a:'180g',n:'Lohifilee'},{a:'200g',n:'Uusperunat'},{a:'100g',n:'Pinaatti'},{a:'1 kpl',n:'Sitruuna'},{a:'2 rkl',n:'Oliiviöljy'},{a:'1 tl',n:'Mausteet (paprika, valkosipuli)'}],
      instructions:'Keitä perunat. Mausta lohi mausteseoksella. Paista öljyssä nahkapuoli ensin 4 min, käännä ja paista 3 min. Loristele sitruunamehua. Tarjoa perunoiden ja pinaatin kanssa.'},
-    {name:'Jauhelihakastike & pasta',emoji:'🍝',time:'25 min',mealPrep:true,kcal:660,protein:50,carbs:68,fat:18,
+    {name:'Jauhelihakastike & pasta',emoji:'🍝',time:'25 min',mealPrep:true,keepsDays:4,storageNote:'Jääkaapissa 4 vrk, pakastettuna 3 kk',kcal:660,protein:50,carbs:68,fat:18,
      ingredients:[{a:'150g',n:'Naudan jauheliha (10%)'},{a:'80g',n:'Täysjyväpasta'},{a:'200g',n:'Tomaattimurska'},{a:'1 kpl',n:'Sipuli'},{a:'2 kpl',n:'Valkosipuli'},{a:'1 tl',n:'Italianlaiset yrtit'}],
      instructions:'Keitä pasta. Kuullota sipuli ja valkosipuli öljyssä. Lisää jauheliha ja ruskista. Lisää tomaattimurska ja yrtit, hauduta 10 min. Sekoita pastan kanssa.'},
-    {name:'Kasvispata & quinoa',emoji:'🌿',time:'30 min',mealPrep:true,kcal:580,protein:28,carbs:76,fat:16,
+    {name:'Kasvispata & quinoa',emoji:'🌿',time:'30 min',mealPrep:true,keepsDays:5,storageNote:'Jääkaapissa 5 vrk, pakastettuna 3 kk',kcal:580,protein:28,carbs:76,fat:16,
      ingredients:[{a:'80g',n:'Quinoa'},{a:'200g',n:'Kikherneet'},{a:'200g',n:'Tomaattimurska'},{a:'1 kpl',n:'Bataatti'},{a:'1 kpl',n:'Sipuli'},{a:'2 tl',n:'Curryjauhe'}],
      instructions:'Keitä quinoa. Kuutioi bataatti ja hauduta sipulin kanssa öljyssä. Lisää curry, kikherneet ja tomaattimurska. Hauduta 15 min. Tarjoa quinoan kera.'},
   ],
@@ -1714,7 +1732,9 @@ function renderMealOption(opt,mi,oi,hidden=false){
   const fat=Math.round(opt.fat||0);
   const typeBadge=isNew?'<span class="new-badge">AI</span>':isCustom?'<span class="custom-badge">OMA</span>':'';
   const favBadge=fav?'<span class="fav-badge">❤️</span>':'';
-  const badge=typeBadge+favBadge;
+  const isPrepActive=opt.mealPrepActive&&opt.mealPrepUntil>=todayISO();
+  const prepBadge=isPrepActive?'<span class="prep-badge">📦</span>':'';
+  const badge=typeBadge+favBadge+prepBadge;
   return `
     <div class="meal-option ${selected?'selected':''} ${(isNew||isCustom)?'pop-in':''} ${hidden?'mc-hidden':''}" data-sel="${selected?'1':''}" data-fav="${fav?'1':''}" onclick="openRecipe(${mi},${oi})">
       <div class="mo-emoji">${sanitize(opt.emoji||'🍽️')}</div>
@@ -1726,7 +1746,7 @@ function renderMealOption(opt,mi,oi,hidden=false){
           <span class="mo-pill c">HH ${carbs}g</span>
           <span class="mo-pill f">R ${fat}g</span>
         </div>
-        <div class="mo-time">⏱ ${sanitize(opt.time||'?')}${opt.mealPrep?' · 📦 Meal prep':''}</div>
+        <div class="mo-time">⏱ ${sanitize(opt.time||'?')}${opt.mealPrep?' · 📦 Meal prep':''}${isPrepActive?'<span class="prep-active-label"> · Prepattu '+opt.mealPrepUntil.slice(5).replace('-','.')+' asti</span>':''}</div>
       </div>
       <button class="mo-quick-add" onclick="openQuickAdd(${mi},${oi},event)" title="Lisää päiväkirjaan">📓</button>
     </div>`;
@@ -1737,6 +1757,15 @@ let recipeMpMode=false;
 let recipeMpServings=4;
 let recipeMpMi=null;
 let recipeMpOi=null;
+let recipeMpDays=1;
+let recipeMpSlotKey=null;
+
+function estimatePrepTime(baseTimeStr,servings){
+  const m=parseInt(baseTimeStr);
+  if(!m||servings<=1) return baseTimeStr;
+  const scaled=Math.round(m*(0.5+Math.sqrt(servings)*0.5));
+  return '~'+scaled+' min';
+}
 
 function scaledIngredient(amount,mult){
   if(mult===1||!amount) return amount;
@@ -1746,29 +1775,59 @@ function scaledIngredient(amount,mult){
   });
 }
 
+function renderMpDatePreview(){
+  const today=todayISO();
+  return Array.from({length:recipeMpDays},(_,i)=>{
+    const d=shiftDate(today,i);
+    const label=i===0?'Tänään':i===1?'Huomenna':d.slice(5).replace('-','.');
+    return `<span class="rm-mp-date-chip">${label}</span>`;
+  }).join('');
+}
+
 function renderMpSection(opt){
   const s=recipeMpServings;
   const ingsHtml=(opt.ingredients||[]).map(ing=>
     `<div class="rm-mp-ing"><div class="ri-amount">${sanitize(scaledIngredient(ing.a,s))}</div><div class="ri-name">${sanitize(ing.n)}</div></div>`
   ).join('');
+  const storageNote=opt.storageNote||('Jääkaapissa '+(opt.keepsDays||4)+' vrk');
+  const slotOpts=DIARY_SLOTS.map(sl=>`<option value="${sl.key}"${recipeMpSlotKey===sl.key?' selected':''}>${sl.icon} ${sl.label}</option>`).join('');
   return `
     <div class="rm-mp-section" id="rm-mp-section">
       <div class="rm-mp-header">
-        <div class="rm-mp-title">📦 Meal prep · ${s} annosta</div>
+        <div class="rm-mp-title">📦 Valmistusmäärä · ${s} annosta</div>
         <div class="rm-mp-stepper">
           <button onclick="changeMpServings(-1)">−</button>
           <span id="rm-mp-count">${s}</span>
           <button onclick="changeMpServings(1)">+</button>
         </div>
       </div>
-      <div class="rm-mp-macros">
+      <div class="rm-mp-stat-row"><span>⏱ Arvioitu valmistusaika</span><span>${estimatePrepTime(opt.time||'',s)}</span></div>
+      <div class="rm-mp-macros" style="margin-top:10px;">
         <div class="rm-mp-macro kcal"><h4>${Math.round((opt.kcal||0)*s)}</h4><p>kcal</p></div>
         <div class="rm-mp-macro prot"><h4>${Math.round((opt.protein||0)*s)}g</h4><p>Proteiini</p></div>
         <div class="rm-mp-macro carb"><h4>${Math.round((opt.carbs||0)*s)}g</h4><p>HH</p></div>
         <div class="rm-mp-macro fat"><h4>${Math.round((opt.fat||0)*s)}g</h4><p>Rasva</p></div>
       </div>
+      <div class="rm-mp-storage"><span class="rm-mp-storage-icon">🧊</span><div><div class="rm-mp-storage-title">Säilyvyys</div><div class="rm-mp-storage-note">${sanitize(storageNote)}</div></div></div>
       <div class="rm-mp-ings">${ingsHtml||'<div style="color:var(--text3);font-size:13px;">Ei aineksia lisätty</div>'}</div>
       <button onclick="saveMpServings()" style="margin-top:12px;width:100%;padding:10px;border-radius:var(--r-sm);background:var(--bg4);border:1.5px solid var(--border2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;">💾 Tallenna annosmäärä (${s} annosta)</button>
+      <div class="rm-mp-plan-section">
+        <div class="rm-mp-plan-title">📅 Lisää ateriasuunnitelmaan</div>
+        <div class="rm-mp-plan-row">
+          <label>Päivät</label>
+          <div class="rm-mp-stepper">
+            <button onclick="changeMpDays(-1)">−</button>
+            <span id="rm-mp-days-count">${recipeMpDays}</span>
+            <button onclick="changeMpDays(1)">+</button>
+          </div>
+        </div>
+        <div class="rm-mp-plan-row">
+          <label>Ateriapaikka</label>
+          <select id="rm-mp-slot" onchange="recipeMpSlotKey=this.value">${slotOpts}</select>
+        </div>
+        <div class="rm-mp-date-preview" id="rm-mp-date-preview">${renderMpDatePreview()}</div>
+        <button class="rm-mp-add-days-btn" onclick="addMpToDiaryDays()">📅 Lisää ${recipeMpDays} päivälle</button>
+      </div>
     </div>`;
 }
 
@@ -1796,6 +1855,42 @@ async function saveMpServings(){
   showToast('✅ Meal prep annosmäärä tallennettu','success');
 }
 
+function changeMpDays(delta){
+  recipeMpDays=Math.min(7,Math.max(1,recipeMpDays+delta));
+  const opt=state.mealPlan[recipeMpMi].options[recipeMpOi];
+  const container=document.getElementById('rm-mp-container');
+  if(container) container.innerHTML=renderMpSection(opt);
+}
+
+async function addMpToDiaryDays(){
+  const opt=state.mealPlan[recipeMpMi].options[recipeMpOi];
+  if(!opt) return;
+  const slotKey=recipeMpSlotKey||DIARY_SLOTS[0].key;
+  const today=todayISO();
+  for(let i=0;i<recipeMpDays;i++){
+    const dateStr=shiftDate(today,i);
+    const day=ensureDiaryDay(dateStr);
+    day.slots[slotKey].push({
+      name:opt.name,
+      emoji:opt.emoji||'🍽️',
+      kcal:Math.round(opt.kcal||0),
+      protein:Math.round(opt.protein||0),
+      carbs:Math.round(opt.carbs||0),
+      fat:Math.round(opt.fat||0),
+      _mealPrepped:true
+    });
+  }
+  await save('diary',state.diary);
+  opt.mealPrepActive=true;
+  opt.mealPrepUntil=shiftDate(today,recipeMpDays-1);
+  await save('mealPlan',state.mealPlan);
+  renderMealPlan();
+  if(state.activeTab==='diary') renderDiaryTab();
+  renderMacroStrip();
+  closeRecipeModal();
+  showToast('✅ '+opt.name+' lisätty '+recipeMpDays+' päivälle!','success');
+}
+
 function openRecipe(mi,oi){
   const meal=state.mealPlan[mi];
   const opt=meal.options[oi];if(!opt)return;
@@ -1807,6 +1902,8 @@ function openRecipe(mi,oi){
   // Init meal prep state
   recipeMpMi=mi; recipeMpOi=oi; recipeMpMode=false;
   recipeMpServings=opt.mealPrepServings||4;
+  recipeMpDays=Math.min(recipeMpServings,7);
+  recipeMpSlotKey=SLOT_MAP[meal.slot]||DIARY_SLOTS[0].key;
 
   const imgHtml=`<div class="recipe-img-placeholder">${sanitize(opt.emoji||'🍽️')}</div>`;
   const ingredientsHtml=(opt.ingredients||[]).map(ing=>
@@ -1835,7 +1932,7 @@ function openRecipe(mi,oi){
       <div class="rm-ingredients">${ingredientsHtml||'<div style="color:var(--text3);font-size:13px;">Ei aineksia lisätty</div>'}</div>
       <div class="rm-section-title">Valmistusohje</div>
       <div class="rm-instructions" style="white-space:pre-line;">${sanitizeNL(opt.instructions||'Ei ohjetta.')}</div>
-      ${opt.mealPrep?`<button id="rm-mp-btn" class="rm-mp-toggle" onclick="toggleMpMode()">📦 Näytä meal prep -määrät <span>›</span></button><div id="rm-mp-container"></div>`:''}
+      <button id="rm-mp-btn" class="rm-mp-toggle${opt.mealPrep?'':' rm-mp-toggle-lite'}" onclick="toggleMpMode()">${opt.mealPrep?'📦 Näytä meal prep -määrät':'📦 Esivalmistele'} <span>›</span></button><div id="rm-mp-container"></div>
       <button class="rm-select-btn" onclick="selectMealOption(${mi},${oi})">${selected?'✓ Valittu':'Valitse tämä ateria'}</button>
       <button id="fav-toggle-btn" class="rm-fav-btn${isFavorite(opt.name)?' active':''}" onclick="toggleFavorite('${sanitize(opt.name).replace(/'/g,"\\'")}',state.mealPlan[${mi}].options[${oi}])">${isFavorite(opt.name)?'❤️ Suosikki':'🤍 Lisää suosikkeihin'}</button>
       <button class="rm-edit-btn" onclick="closeRecipeModal();editCustomMeal(${mi},${oi})">✏️ Muokkaa reseptiä</button>
